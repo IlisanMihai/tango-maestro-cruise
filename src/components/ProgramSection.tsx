@@ -7,7 +7,7 @@ const months = [
   {
     title: "Luna 2 – Muzicalitate și improvizație",
     description: "Pași combinați, joc cu ritmul, introducere în vals și milonga. Începem să ascultăm muzica cu tot corpul.",
-    schedule: "Marți & Joi, 19:00–21:00",
+    schedule: "Luni & Miercuri, 19:00–21:00",
   },
   {
     title: "Luna 3 – Eleganță și expresie",
