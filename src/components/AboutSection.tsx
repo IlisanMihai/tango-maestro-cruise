@@ -22,7 +22,7 @@ const AboutSection = () => {
           {/* Text block */}
           <div className="md:w-[65%] relative z-20 md:pt-16 md:pl-8 bg-background/90 md:backdrop-blur-sm md:p-12">
             <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-8">
-              O viață dedicată tangoului
+              Francisco Iturrieta
             </h2>
             <ul className="space-y-4 font-body text-base text-foreground/80 mb-10">
               <li className="flex items-start gap-3">
