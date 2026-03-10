@@ -42,7 +42,7 @@ const HeroSection = () => {
         </div>
 
         <p className="font-body text-xs text-gold/70 tracking-wide">
-          Locuri limitate – înscrieri până la 15 aprilie 2026
+          Locuri limitate – înscrieri până la 1 aprilie 2026
         </p>
       </div>
     </section>

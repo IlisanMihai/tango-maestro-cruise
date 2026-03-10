@@ -47,17 +47,17 @@ const InfoSection = () => {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between items-baseline">
                 <span className="font-body text-sm text-foreground/70">Pachet 3 luni</span>
-                <span className="font-display text-xl text-parchment font-semibold">450 lei</span>
+                <span className="font-display text-xl text-parchment font-semibold">780 lei</span>
               </div>
               <div className="separator-gold" />
               <div className="flex justify-between items-baseline">
                 <span className="font-body text-sm text-foreground/70">Pachet lunar</span>
-                <span className="font-display text-xl text-parchment font-semibold">180 lei</span>
+                <span className="font-display text-xl text-parchment font-semibold">280 lei</span>
               </div>
               <div className="separator-gold" />
               <div className="flex justify-between items-baseline">
                 <span className="font-body text-sm text-foreground/70">Drop-in</span>
-                <span className="font-display text-xl text-parchment font-semibold">50 lei</span>
+                <span className="font-display text-xl text-parchment font-semibold">45 lei</span>
               </div>
             </div>
             <p className="font-body text-xs text-muted-foreground">
