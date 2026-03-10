@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const RegistrationSection = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,10 +15,10 @@ const RegistrationSection = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim()) {
-      toast.error("Te rugăm completează numele și emailul.");
+      toast.error(t("reg.errorMsg"));
       return;
     }
-    toast.success("Înscrierea a fost trimisă! Vei primi un email cu detaliile.");
+    toast.success(t("reg.successMsg"));
     setFormData({ name: "", email: "", phone: "", level: "incepator", package: "3luni" });
   };
 
@@ -30,10 +32,10 @@ const RegistrationSection = () => {
       <div className="max-w-content mx-auto px-6">
         <div className="max-w-lg mx-auto text-center mb-16">
           <p className="font-body text-sm tracking-[0.3em] uppercase text-gold mb-4">
-            Fă primul pas
+            {t("reg.label")}
           </p>
           <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-4">
-            Rezervă-ți locul
+            {t("reg.title")}
           </h2>
           <div className="separator-gold mx-auto max-w-[80px]" />
         </div>
@@ -41,7 +43,7 @@ const RegistrationSection = () => {
         <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-5">
           <input
             type="text"
-            placeholder="Nume complet"
+            placeholder={t("reg.name")}
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className={inputClass}
@@ -49,7 +51,7 @@ const RegistrationSection = () => {
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t("reg.email")}
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className={inputClass}
@@ -57,7 +59,7 @@ const RegistrationSection = () => {
           />
           <input
             type="tel"
-            placeholder="Telefon (opțional)"
+            placeholder={t("reg.phone")}
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             className={inputClass}
@@ -70,18 +72,18 @@ const RegistrationSection = () => {
               onChange={(e) => setFormData({ ...formData, level: e.target.value })}
               className={selectClass}
             >
-              <option value="incepator">Începător</option>
-              <option value="intermediar">Intermediar</option>
-              <option value="avansat">Avansat</option>
+              <option value="incepator">{t("reg.beginner")}</option>
+              <option value="intermediar">{t("reg.intermediate")}</option>
+              <option value="avansat">{t("reg.advanced")}</option>
             </select>
             <select
               value={formData.package}
               onChange={(e) => setFormData({ ...formData, package: e.target.value })}
               className={selectClass}
             >
-              <option value="3luni">Pachet 3 luni</option>
-              <option value="lunar">Pachet lunar</option>
-              <option value="dropin">Drop-in</option>
+              <option value="3luni">{t("reg.pkg3")}</option>
+              <option value="lunar">{t("reg.pkgMonthly")}</option>
+              <option value="dropin">{t("reg.pkgDropin")}</option>
             </select>
           </div>
 
@@ -89,11 +91,11 @@ const RegistrationSection = () => {
             type="submit"
             className="w-full bg-primary text-primary-foreground py-4 font-body text-sm font-medium tracking-wide rounded-sm hover:brightness-125 transition-all"
           >
-            Trimite înscrierea
+            {t("reg.submit")}
           </button>
 
           <p className="font-body text-xs text-muted-foreground text-center">
-            După trimitere, vei primi un email cu toate detaliile (program, plată, recomandări).
+            {t("reg.note")}
           </p>
         </form>
 

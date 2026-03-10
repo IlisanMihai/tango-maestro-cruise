@@ -8,10 +8,12 @@ import InfoSection from "@/components/InfoSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import RegistrationSection from "@/components/RegistrationSection";
 import Footer from "@/components/Footer";
+import LanguageSelector from "@/components/LanguageSelector";
 
 const Index = () => {
   return (
     <main>
+      <LanguageSelector />
       <HeroSection />
       <AboutSection />
       <BreathSection />
