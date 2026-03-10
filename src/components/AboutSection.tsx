@@ -1,4 +1,4 @@
-import maestroImage from "@/assets/maestro-portrait.jpg";
+import maestroImage from "@/assets/maestro-portrait.jpeg";
 
 const AboutSection = () => {
   return (
