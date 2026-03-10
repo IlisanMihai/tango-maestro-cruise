@@ -2,17 +2,17 @@ const months = [
   {
     title: "Luna 1 – Fundament și conexiune",
     description: "Poziție, caminată, abrazo, conexiune și ritm de bază. Construim fundația pe care se clădește fiecare pas.",
-    schedule: "Marți & Joi, 19:00–21:00",
+    schedule: "Luni & Miercuri, 19:00–21:00",
   },
   {
     title: "Luna 2 – Muzicalitate și improvizație",
     description: "Pași combinați, joc cu ritmul, introducere în vals și milonga. Începem să ascultăm muzica cu tot corpul.",
-    schedule: "Marți & Joi, 19:00–21:00",
+    schedule: "Luni & Miercuri, 19:00–21:00",
   },
   {
     title: "Luna 3 – Eleganță și expresie",
     description: "Giros, sacadas, secvențe pentru milongă și finețe în mișcare. Rafinăm și pregătim dansul pentru scenă.",
-    schedule: "Marți & Joi, 19:00–21:00",
+    schedule: "Luni & Miercuri, 19:00–21:00",
   },
 ];
 
