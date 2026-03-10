@@ -30,7 +30,7 @@ const InfoSection = () => {
               Calendar
             </span>
             <h3 className="font-display text-xl font-semibold text-parchment mb-4">
-              Mai – Iulie 2026
+              3 Aprilie – 28 Iunie 2026
             </h3>
             <p className="font-body text-sm text-foreground/70 leading-relaxed">
               Marți & Joi<br />
