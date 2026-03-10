@@ -20,7 +20,7 @@ const HeroSection = () => {
           la Oradea
         </h1>
         <p className="font-display text-xl md:text-2xl italic text-parchment/80 mb-4 max-w-lg">
-          3 luni cu maestru din Buenos Aires
+          3 luni cu maestrul Francisco Iturrieta din Buenos Aires
         </p>
         <p className="font-body text-base text-muted-foreground mb-10 max-w-md">
           Cursuri intensive, practici și milongi pentru toată comunitatea de tango din Oradea.
