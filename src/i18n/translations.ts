@@ -126,7 +126,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "about.bio1": "Born and trained in Buenos Aires",
     "about.bio2": "Over 20 years of experience in teaching and international shows",
     "about.bio3": "Specialized in salon tango, musicality and improvisation",
-    "about.quote": '"Tango is a sincere dialogue between two hearts listening to the same music."',
+    "about.quote": "\u201CTango is a sincere dialogue between two hearts listening to the same music.\u201D",
 
     // Breath
     "breath.quote": "Every step is a conversation. Every pause, a promise.",
