@@ -20,7 +20,7 @@ const AboutSection = () => {
           </div>
 
           {/* Text block */}
-          <div className="md:w-[65%] relative z-20 md:pt-16 md:pl-8 bg-background/90 md:backdrop-blur-sm md:p-12">
+          <div className="md:w-[60%] md:pt-4">
             <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-8">
               Francisco Iturrieta
             </h2>
