@@ -9,18 +9,18 @@ const AboutSection = () => {
         </p>
         <div className="separator-gold mb-16 max-w-[120px]" />
 
-        <div className="relative md:flex md:items-start md:gap-0">
-          {/* Portrait - overlapping asymmetric */}
-          <div className="md:w-[45%] md:-mr-12 relative z-10 mb-8 md:mb-0">
+        <div className="relative md:flex md:items-start md:gap-8">
+          {/* Portrait - full image visible */}
+          <div className="md:w-[40%] shrink-0 mb-8 md:mb-0">
             <img
               src={maestroImage}
-              alt="Portret maestru de tango argentinian"
-              className="w-full max-w-sm md:max-w-none object-cover aspect-[3/4] rounded-sm"
+              alt="Portret Francisco Iturrieta - maestru de tango argentinian"
+              className="w-full max-w-sm md:max-w-none object-contain rounded-sm"
             />
           </div>
 
           {/* Text block */}
-          <div className="md:w-[65%] relative z-20 md:pt-16 md:pl-8 bg-background/90 md:backdrop-blur-sm md:p-12">
+          <div className="md:w-[60%] md:pt-4">
             <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-8">
               Francisco Iturrieta
             </h2>
