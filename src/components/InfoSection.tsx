@@ -33,7 +33,7 @@ const InfoSection = () => {
               3 Aprilie – 28 Iunie 2026
             </h3>
             <p className="font-body text-sm text-foreground/70 leading-relaxed">
-              Marți & Joi<br />
+              Luni & Miercuri<br />
               19:00 – 21:00<br />
               + milongi în weekenduri
             </p>

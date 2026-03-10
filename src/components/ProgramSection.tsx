@@ -12,7 +12,7 @@ const months = [
   {
     title: "Luna 3 – Eleganță și expresie",
     description: "Giros, sacadas, secvențe pentru milongă și finețe în mișcare. Rafinăm și pregătim dansul pentru scenă.",
-    schedule: "Marți & Joi, 19:00–21:00",
+    schedule: "Luni & Miercuri, 19:00–21:00",
   },
 ];
 
