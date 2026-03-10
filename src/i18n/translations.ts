@@ -18,7 +18,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "about.bio1": "Născut și format în Buenos Aires",
     "about.bio2": "Peste 20 de ani de experiență în predare și show-uri internaționale",
     "about.bio3": "Specializat în tango de salon, muzicalitate și improvizație",
-    "about.quote": "„Tango este un dialog sincer între două inimi care ascultă aceeași muzică."",
+    "about.quote": "\u201ETango este un dialog sincer \u00eentre dou\u0103 inimi care ascult\u0103 aceea\u0219i muzic\u0103.\u201D",
 
     // Breath
     "breath.quote": "Fiecare pas este o conversație. Fiecare pauză, o promisiune.",
