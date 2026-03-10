@@ -19,7 +19,7 @@ const InfoSection = () => {
               Sala de dans Oradea
             </h3>
             <p className="font-body text-sm text-foreground/70 leading-relaxed">
-              Str. Republicii nr. 45<br />
+              Piața Emanuil Gojdu nr. 45<br />
               Oradea, Bihor
             </p>
           </div>
