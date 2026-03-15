@@ -1,4 +1,4 @@
-import maestroImage from "@/assets/maestro-portrait.jpeg";
+import maestroImage from "@/assets/maestro-portrait.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const AboutSection = () => {
