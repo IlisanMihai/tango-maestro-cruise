@@ -22,10 +22,10 @@ const AboutSection = () => {
           </div>
 
           <div className="md:w-[60%] md:pt-4">
-            <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-8">
+            <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-6">
               {t("about.name")}
             </h2>
-            <ul className="space-y-4 font-body text-base text-foreground/80 mb-10">
+            <ul className="space-y-4 font-body text-base text-foreground/80 mb-6">
               {["about.bio1", "about.bio2", "about.bio3"].map((key) => (
                 <li key={key} className="flex items-start gap-3">
                   <span className="block w-1.5 h-1.5 rounded-full bg-gold mt-2 shrink-0" />
