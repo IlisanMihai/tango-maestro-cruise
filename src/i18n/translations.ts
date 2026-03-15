@@ -16,9 +16,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "about.label": "Maestrul invitat",
     "about.name": "Francisco Iturrieta",
     "about.bio1": "Născut și format în Buenos Aires",
-    "about.bio2": "Peste 20 de ani de experiență în predare și show-uri internaționale",
+    "about.bio2": "Francisco Iturrieta a început să studieze tango argentinian în 1995, alături de legendarul Norberto “El Pulpo” Esbrez, una dintre figurile emblematice ale tangoului din Buenos Aires.",
     "about.bio3": "Specializat în tango de salon, muzicalitate și improvizație",
-    "about.quote": "\u201ETango este un dialog sincer \u00eentre dou\u0103 inimi care ascult\u0103 aceea\u0219i muzic\u0103.\u201D",
+    "about.quote": "\u201ETango-ul este mai mult decât un dans — este o experiență senzorială care depășește mișcarea corporală, deoarece este un dans al îmbrățișării care generează stare de bine, o formă de comunicare, prezență și conexiune.\u201D",
 
     // Breath
     "breath.quote": "Fiecare pas este o conversație. Fiecare pauză, o promisiune.",
