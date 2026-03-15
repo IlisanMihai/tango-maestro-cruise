@@ -15,9 +15,9 @@ export const translations: Record<Language, Record<string, string>> = {
     // About
     "about.label": "Maestrul invitat",
     "about.name": "Francisco Iturrieta",
-    "about.bio1": "Născut și format în Buenos Aires",
-    "about.bio2": "Francisco Iturrieta a început să studieze tango argentinian în 1995, alături de legendarul Norberto “El Pulpo” Esbrez, una dintre figurile emblematice ale tangoului din Buenos Aires.",
-    "about.bio3": "Specializat în tango de salon, muzicalitate și improvizație",
+    "about.bio1": "Născut și format în Argentina",
+    "about.bio2": "Francisco Iturrieta a început să studieze tango argentinian în 1995, alături de legendarul Norberto “El Pulpo” Esbrez, una dintre figurile emblematice ale tangoului din Buenos Aires. La câțiva ani după, Francisco a început și să predea tango, iar de atunci continuă să transmită această pasiune mai departe, formând dansatori și comunități de tango de-a lungul unei cariere profesionale de aproape 30 de ani",
+    "about.bio3": "Experiența sa cuprinde toate stilurile tangoului, de la canyengue, salón și milonguero, până la tango de scenă și tango nuevo, oferindu-i o perspectivă bogată și autentică asupra acestui dans",
     "about.quote": "\u201ETango-ul este mai mult decât un dans — este o experiență senzorială care depășește mișcarea corporală, deoarece este un dans al îmbrățișării care generează stare de bine, o formă de comunicare, prezență și conexiune.\u201D",
 
     // Breath
@@ -123,10 +123,10 @@ export const translations: Record<Language, Record<string, string>> = {
     // About
     "about.label": "Guest maestro",
     "about.name": "Francisco Iturrieta",
-    "about.bio1": "Born and trained in Buenos Aires",
-    "about.bio2": "Over 20 years of experience in teaching and international shows",
-    "about.bio3": "Specialized in salon tango, musicality and improvisation",
-    "about.quote": "\u201CTango is a sincere dialogue between two hearts listening to the same music.\u201D",
+    "about.bio1": "Born and trained in Argentina",
+    "about.bio2": "Began studying Argentine tango in 1995 with the legendary Norberto “El Pulpo” Esbrez, one of the most emblematic figures of tango in Buenos Aires. Several years after, Francisco also began teaching tango, and since then he has continued to share this passion, training dancers and tango communities for almost 30 years.",
+    "about.bio3": "His experience encompasses all styles of tango, from canyengue, salon, and milonguero, to stage tango and nuevo tango, giving him a rich and authentic perspective on this dance.",
+    "about.quote": "\u201CTango is more than a dance-it is a sensory experience that transcends the physical because it is a dance of embraces that generate well-being, a form of communication, presence, and connection.\u201D",
 
     // Breath
     "breath.quote": "Every step is a conversation. Every pause, a promise.",
@@ -231,10 +231,10 @@ export const translations: Record<Language, Record<string, string>> = {
     // About
     "about.label": "Maestro invitado",
     "about.name": "Francisco Iturrieta",
-    "about.bio1": "Nacido y formado en Buenos Aires",
-    "about.bio2": "Más de 20 años de experiencia en enseñanza y shows internacionales",
-    "about.bio3": "Especializado en tango de salón, musicalidad e improvisación",
-    "about.quote": "«El tango es un diálogo sincero entre dos corazones que escuchan la misma música.»",
+    "about.bio1": "Nacido y formado en Argentina",
+    "about.bio2": "Comenzó a estudiar tango argentino en 1995, junto al legendario Norberto “El Pulpo” Esbrez, una de las figuras emblemáticas del tango en Buenos Aires. Varios años después, Francisco también comenzó a enseñar tango, y desde entonces continua transmitiendo esta pasión, formando a bailarines y comunidades de tango por casi 30 años de trayectoria profesional.",
+    "about.bio3": "Su experiencia abarca todos los estilos del tango, desde el canyengue, el salón y el milonguero, hasta el tango de escenario y tango nuevo, lo que le otorga una perspectiva rica y auténtica de este baile.",
+    "about.quote": "«El tango es más que un baile, es una experiencia sensorial que trasciende lo corporal porque es un baile de abrazos que generan bienestar, una forma de comunicación, presencia y conexión.»",
 
     // Breath
     "breath.quote": "Cada paso es una conversación. Cada pausa, una promesa.",
