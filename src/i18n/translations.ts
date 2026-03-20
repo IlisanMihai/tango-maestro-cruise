@@ -103,6 +103,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "reg.note": "După trimitere, vei primi un email cu toate detaliile (program, plată, recomandări).",
     "reg.errorMsg": "Te rugăm completează numele și emailul.",
     "reg.successMsg": "Înscrierea a fost trimisă! Vei primi un email cu detaliile.",
+    "reg.submitError": "Eroare la trimitere.",
 
     // Footer
     "footer.title": "Tango argentinian · Oradea 2026",
@@ -211,6 +212,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "reg.note": "After submitting, you will receive an email with all the details (schedule, payment, recommendations).",
     "reg.errorMsg": "Please fill in your name and email.",
     "reg.successMsg": "Registration submitted! You will receive an email with the details.",
+    "reg.submitError": "Something went wrong while submitting the registration.",
 
     // Footer
     "footer.title": "Argentine tango · Oradea 2026",
@@ -319,6 +321,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "reg.note": "Después de enviar, recibirás un email con todos los detalles (programa, pago, recomendaciones).",
     "reg.errorMsg": "Por favor completá tu nombre y email.",
     "reg.successMsg": "¡Inscripción enviada! Recibirás un email con los detalles.",
+    "reg.submitError": "Se produjo un error al enviar el registro.",
 
     // Footer
     "footer.title": "Tango argentino · Oradea 2026",

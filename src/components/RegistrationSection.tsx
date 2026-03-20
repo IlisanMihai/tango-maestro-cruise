@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import emailjs from "@emailjs/browser";
+
+const EMAILJS_PUBLIC_KEY    = "A1c6wF1oHPLirMlL1";
+const EMAILJS_SERVICE_ID    = "service_098m15o";
+const NOTIFICATION_TEMPLATE = "template_iu0mq8f";
+const CONFIRMATION_TEMPLATE = "template_zauf10g";
+const SHEETS_WEBHOOK = "https://script.google.com/macros/s/AKfycbw_Dh3IWnxqzl_zt_555tzXVlCBauciZTzecALjntfvb3YOm_QyMGLZ29DfQ-UF9eyC/exec";
 
 const RegistrationSection = () => {
   const { t } = useLanguage();
@@ -9,17 +16,38 @@ const RegistrationSection = () => {
     email: "",
     phone: "",
     level: "incepator",
-    package: "3luni",
+    subscription: "3luni",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim()) {
       toast.error(t("reg.errorMsg"));
       return;
     }
-    toast.success(t("reg.successMsg"));
-    setFormData({ name: "", email: "", phone: "", level: "incepator", package: "3luni" });
+    try{
+      // 1. Send new register notification email (EmailJS)
+      await emailjs.send(EMAILJS_SERVICE_ID, NOTIFICATION_TEMPLATE, formData, EMAILJS_PUBLIC_KEY);
+    
+      // 2. Send confirmation email to user (EmailJS)
+      await emailjs.send(EMAILJS_SERVICE_ID, CONFIRMATION_TEMPLATE, {
+        full_name:    formData.name,
+        to_email:     formData.email,
+        level:        formData.level,
+        subscription: formData.subscription,
+      }, EMAILJS_PUBLIC_KEY);
+
+      // 2. Send data to Google Sheets
+      await fetch(SHEETS_WEBHOOK, {
+        method: "POST",
+        body: JSON.stringify(formData),
+      });
+    
+      toast.success(t("reg.successMsg"));
+      setFormData({ name: "", email: "", phone: "", level: "incepator", subscription: "3luni" });
+    } catch (error) {
+      toast.error(t("reg.submitError"));
+    }
   };
 
   const inputClass =
@@ -77,13 +105,12 @@ const RegistrationSection = () => {
               <option value="avansat">{t("reg.advanced")}</option>
             </select>
             <select
-              value={formData.package}
-              onChange={(e) => setFormData({ ...formData, package: e.target.value })}
+              value={formData.subscription}
+              onChange={(e) => setFormData({ ...formData, subscription: e.target.value })}
               className={selectClass}
             >
               <option value="3luni">{t("reg.pkg3")}</option>
               <option value="lunar">{t("reg.pkgMonthly")}</option>
-              <option value="dropin">{t("reg.pkgDropin")}</option>
             </select>
           </div>
 
@@ -100,13 +127,10 @@ const RegistrationSection = () => {
         </form>
 
         <div className="flex justify-center gap-8 mt-12">
-          <a href="#" className="font-body text-xs tracking-wide text-gold/60 hover:text-gold transition-colors">
+          <a href="https://www.facebook.com/events/26660535083543880?active_tab=about" className="font-body text-xs tracking-wide text-gold/60 hover:text-gold transition-colors">
             Facebook
           </a>
-          <a href="#" className="font-body text-xs tracking-wide text-gold/60 hover:text-gold transition-colors">
-            Instagram
-          </a>
-          <a href="#" className="font-body text-xs tracking-wide text-gold/60 hover:text-gold transition-colors">
+          <a href="https://chat.whatsapp.com/C0Llei158Iw99k1IlT4Dr3" className="font-body text-xs tracking-wide text-gold/60 hover:text-gold transition-colors">
             WhatsApp
           </a>
         </div>
