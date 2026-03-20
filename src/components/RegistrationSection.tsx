@@ -18,6 +18,7 @@ const RegistrationSection = () => {
     level: "incepator",
     subscription: "3luni",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ const RegistrationSection = () => {
       toast.error(t("reg.errorMsg"));
       return;
     }
+    setIsLoading(true);
     try{
       // 1. Send new register notification email (EmailJS)
       await emailjs.send(EMAILJS_SERVICE_ID, NOTIFICATION_TEMPLATE, formData, EMAILJS_PUBLIC_KEY);
@@ -47,6 +49,8 @@ const RegistrationSection = () => {
       setFormData({ name: "", email: "", phone: "", level: "incepator", subscription: "3luni" });
     } catch (error) {
       toast.error(t("reg.submitError"));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -116,9 +120,18 @@ const RegistrationSection = () => {
 
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full bg-primary text-primary-foreground py-4 font-body text-sm font-medium tracking-wide rounded-sm hover:brightness-125 transition-all"
           >
-            {t("reg.submit")}
+            {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              {t("reg.loading")}
+            </span>
+            ) : ( t("reg.submit"))}
           </button>
 
           <p className="font-body text-xs text-muted-foreground text-center">
