@@ -50,7 +50,7 @@ const InfoSection = () => {
               <div className="separator-gold" />
               <div className="flex justify-between items-baseline">
                 <span className="font-body text-sm text-foreground/70">{t("info.pricing.monthly")}</span>
-                <span className="font-display text-xl text-parchment font-semibold">320 lei (aprox 10 lei/ ora)</span>
+                <span className="font-display text-xl text-parchment font-semibold">320 lei</span>
               </div>
               <div className="separator-gold" />
               <div className="flex justify-between items-baseline">

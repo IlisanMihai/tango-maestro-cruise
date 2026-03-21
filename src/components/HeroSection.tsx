@@ -13,9 +13,6 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
 
       <div className="relative z-10 w-full max-w-content mx-auto px-6 pb-24 pt-48">
-        <p className="font-body text-sm tracking-[0.3em] uppercase text-gold mb-6">
-          {t("hero.location")}
-        </p>
         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-semibold leading-[0.95] text-parchment mb-8">
           {t("hero.title1")}<br />
           {t("hero.title2")}

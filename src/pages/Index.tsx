@@ -19,8 +19,8 @@ const Index = () => {
       <BreathSection />
       <LevelsSection />
       <ProgramSection />
-      <EventsSection />
       <InfoSection />
+      <EventsSection />
       <RegistrationSection />
       <TestimonialsSection />
       <Footer />

@@ -2,9 +2,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import type { Language } from "@/i18n/translations";
 
 const flags: Record<Language, string> = {
-  ro: "🇷🇴",
-  en: "🇬🇧",
-  es: "🇪🇸",
+  ro: "/flags/ro.svg",
+  en: "/flags/en.svg",
+  es: "/flags/es.svg",
 };
 
 const LanguageSelector = () => {
@@ -24,7 +24,8 @@ const LanguageSelector = () => {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          {flags[lang]} {lang.toUpperCase()}
+            <img src={flags[lang]} alt={lang} className="inline-block w-5 h-5 mr-1" />
+            {lang.toUpperCase()}
         </button>
       ))}
     </div>
