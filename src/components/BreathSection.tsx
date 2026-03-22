@@ -12,7 +12,7 @@ const BreathSection = () => {
       />
       <div className="absolute inset-0 bg-background/50" />
       <div className="relative z-10 h-full flex items-center justify-center px-6">
-        <p className="font-display text-2xl md:text-4xl italic text-parchment/80 text-center max-w-2xl">
+        <p className="font-display text-2xl md:text-5xl italic text-parchment/80 text-center max-w-2xl whitespace-pre-line">
           {t("breath.quote")}
         </p>
       </div>

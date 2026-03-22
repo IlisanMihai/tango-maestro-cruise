@@ -10,21 +10,21 @@ const LevelsSection = () => {
   ];
 
   return (
-    <section className="py-24 md:py-32 bg-secondary/30">
+    <section className="py-24 md:py-32 bg-secondary/50">
       <div className="max-w-content mx-auto px-6 text-center">
         
         <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-16">
           {t("levels.title")}
         </h2>
         
-        <p className="font-body text-sm tracking-[0.3em] uppercase text-gold mb-4">
-          {t("levels.label")}
+        <p className="font-body text-sm tracking-[0.3em] uppercase text-gold mb-12 whitespace-pre-line">
+          {t("levels.subtitle")}
         </p>
 
         <div className="grid md:grid-cols-3 gap-12 md:gap-8">
           {levels.map((level) => (
             <div key={level.key} className="text-center">
-              <div className="w-12 h-px bg-gold/40 mx-auto mb-6" />
+              <div className="w-12 h-px bg-gold/40 mx-auto mb-4" />
               <h3 className="font-display text-xl md:text-2xl font-semibold text-parchment mb-4">
                 {t(`levels.${level.key}`)}
               </h3>

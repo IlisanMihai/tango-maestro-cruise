@@ -5,27 +5,28 @@ const AboutSection = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-6 md:pt-6 md:pb-16">
       <div className="max-w-content mx-auto px-6">
+        <div className="text-left md:text-center"> 
         <p className="font-body text-sm tracking-[0.3em] uppercase text-gold mb-4">
           {t("about.label")}
         </p>
-        <div className="separator-gold mb-16 max-w-[120px]" />
-
+        <div className="separator-gold mx-auto mb-6 max-w-[120px]" />
+        </div>
         <div className="relative md:flex md:items-start md:gap-8">
           <div className="md:w-[40%] shrink-0 mb-8 md:mb-0">
             <img
               src={maestroImage}
               alt={`${t("about.name")} - maestro de tango argentinian`}
-              className="w-full max-w-sm md:max-w-none object-contain rounded-sm"
+              className="w-full max-w-sm md:max-w-none object-contain rounded-md"
             />
           </div>
 
-          <div className="md:w-[60%] md:pt-4">
-            <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-6">
+          <div className="md:w-[60%]">
+            <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-4">
               {t("about.name")}
             </h2>
-            <ul className="space-y-4 font-body text-base text-foreground/80 mb-6">
+            <ul className="space-y-4 font-body text-base text-foreground/80 mb-4">
               {["about.bio1", "about.bio2", "about.bio3"].map((key) => (
                 <li key={key} className="flex items-start gap-3">
                   <span className="block w-1.5 h-1.5 rounded-full bg-gold mt-2 shrink-0" />

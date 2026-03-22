@@ -4,13 +4,14 @@ import type { Language } from "@/i18n/translations";
 const flags: Record<Language, string> = {
   ro: "/flags/ro.svg",
   en: "/flags/en.svg",
+  hu: "/flags/hu.svg",
   es: "/flags/es.svg",
 };
 
 const LanguageSelector = () => {
   const { language, setLanguage } = useLanguage();
 
-  const langs: Language[] = ["ro", "en", "es"];
+  const langs: Language[] = ["ro", "en", "hu", "es"];
 
   return (
     <div className="fixed top-4 right-4 z-50 flex gap-1 bg-background/80 backdrop-blur-sm border border-gold/20 rounded-sm p-1">

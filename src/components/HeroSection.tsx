@@ -12,24 +12,27 @@ const HeroSection = () => {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
 
-      <div className="relative z-10 w-full max-w-content mx-auto px-6 pb-24 pt-48">
-        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-semibold leading-[0.95] text-parchment mb-8">
+      <div className="relative z-10 w-full max-w-content mx-auto px-6 pb-24 pt-32">
+        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-semibold leading-[0.95] text-parchment mb-4">
           {t("hero.title1")}<br />
           {t("hero.title2")}
         </h1>
-        <p className="font-display text-xl md:text-2xl italic text-parchment/80 mb-4 max-w-lg">
+        <p className="font-display text-xl md:text-3xl italic text-parchment/80 mb-4 max-w-xl">
           {t("hero.subtitle")}
         </p>
-        <p className="font-body text-base text-muted-foreground mb-10 max-w-md">
+        <p className="font-body text-base text-muted-foreground mb-6 max-w-md">
           {t("hero.description")}
         </p>
+        <p className="font-body text-base font-semibold italic text-gold/70 mb-4 max-w-md">
+          {t("hero.invitation")}
+        </p>
 
-        <div className="flex flex-wrap gap-4 mb-8">
+        <div className="flex flex-wrap gap-4 mb-4">
           <a
             href="#inscriere"
             className="inline-block bg-primary text-primary-foreground px-8 py-3.5 font-body text-sm font-medium tracking-wide rounded-sm hover:brightness-125 transition-all"
           >
-            {t("hero.cta")}
+            {t("hero.reg")}
           </a>
           <a
             href="#program"

@@ -10,18 +10,14 @@ const ProgramSection = () => {
   ];
 
   return (
-    <section id="program" className="py-24 md:py-32">
+    <section id="program" className="py-16 md:py-20">
       <div className="max-w-content mx-auto px-6">
-        <p className="font-body text-sm tracking-[0.3em] uppercase text-gold mb-4">
-          {t("program.label")}
-        </p>
-        <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-3">
+        <h2 className="font-display text-3xl md:text-5xl md:text-center font-semibold text-parchment mb-4">
           {t("program.title")}
         </h2>
-        <p className="font-body text-muted-foreground mb-16">
+        <p className="font-body text-muted-foreground md:text-center mb-8">
           {t("program.subtitle")}
         </p>
-
         <div className="grid md:grid-cols-3 gap-px bg-gold/20">
           {months.map((month) => (
             <div key={month.key} className="bg-background p-8 md:p-10">
