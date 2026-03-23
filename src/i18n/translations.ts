@@ -221,7 +221,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "reg.pkgFull": "Pachet complet (3 luni)",
     "reg.pkgMonthly": "Pachet lunar",
     "reg.submit": "Înscrie-te acum",
-    "reg.note": "După insriere, vei primi un email de confirmare cu toate detaliile.",
+    "reg.note": "După inscriere, vei primi un email de confirmare cu toate detaliile.",
     "reg.errorMsg": "Te rugăm completează numele și emailul.",
     "reg.successMsg": "Înscrierea a fost trimisă! Vei primi un email cu detaliile.",
     "reg.submitError": "Eroare la trimitere.",
@@ -238,7 +238,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
   hu: {
     // Hero
-    "hero.location": "Oradea · 2026",
+    "hero.location": "Nagyvárad · 2026",
     "hero.title1": "Argentin tangó",
     "hero.title2": "Nagyváradon",
     "hero.subtitle": "3 hónapos program Francisco Iturrieta táncoktatóval, Argentínából",
@@ -254,7 +254,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "about.bio1": "Argentínában született és képzett",
     "about.bio2": "1995-ben kezdte tanulmányozni az argentin tangót a legendás Norberto “El Pulpo” Esbrez mellett, Buenos Aires egyik legemblematikusabb tangófigurája. Néhány évvel később Francisco elkezdett tangót tanítani, és azóta is folyamatosan továbbadja ezt a szenvedélyt, táncosokat és tangó közösségeket képezve közel 30 éves szakmai pályafutása során.",
     "about.bio3": "Tapasztalata magában foglalja a tangó minden stílusát, a canyengue-től, a salónon át a milonguero-ig, a színpadi tangóig és a nuevo tangóig, gazdag és autentikus perspektívát adva erről a táncról.",
-    "about.quote": "\u201ETango több mint egy tánc – egy érzékszervi élmény, amely meghaladja a fizikai mozgást, mert egy ölelkezős tánc, amely jó közérzetet, kommunikációt, jelenlétet és kapcsolatot generál.\u201D",
+    "about.quote": "\u201ETango több mint egy tánc – egy érzékszervi élmény, amely meghaladja a fizikai mozgást, mert ez egy olyan tánc ami az ölelésre alapszik és amely jó közérzetet, kommunikációt, jelenlétet és kapcsolatot generál.\u201D",
 
     // Breath
     "breath.quote": "Minden lépés egy beszélgetés.\nMinden szünet egy ígéret.",
@@ -283,10 +283,10 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Events
     "events.label": "A tanfolyamokon túl",
-    "events.title": "Tangó esték Oradeában",
+    "events.title": "Tangó esték Nagyváradon",
     "events.event1.date": "2026. április 4.",
     "events.event1.title": "Üdvözlő milonga",
-    "events.event1.desc": "Egy nyitó este a mesterrel DJ-ként, egy különleges show-val Katalin Csontos vendégtanárnővel.",
+    "events.event1.desc": "Egy nyitó este a táncoktatóval DJ-ként, egy különleges show-val Katalin Csontos vendégtanárnővel.",
     "events.event2.date": "2026. április – június",
     "events.event2.title": "Heti gyakorlások és milongák plusz havi milongák",
     "events.event2.desc": "Egy meleg és befogadó tér a gyakorláshoz, kérdésekhez és fejlődéshez, személyre szabott útmutatással.",
@@ -299,7 +299,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "info.title": "Helyszín, program & jegyek",
     "info.location.label": "Helyszín",
     "info.location.name": "Feeling Dance Studio",
-    "info.location.address": "Strada Vasile Alecsandri nr 12\nOradea, Bihor",
+    "info.location.address": "Strada Vasile Alecsandri nr 12\nNagyvárad, Bihor",
     "info.calendar.label": "Program",
     "info.calendar.period": "2026. április 3. – június 28.",
     "info.calendar.details": "Szerda & Péntek\n19:00 – 21:00 órák\n\nVasárnap\n18:00 – 22:00\nGyakorlás & Milonga",
@@ -315,14 +315,14 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Testimonials
     "testimonials.label": "Közösség",
-    "testimonials.title": "Mit mondanak a táncosok Oradeában",
-    "testimonials.t1.text": "Amióta először táncoltam Francisco-val, éreztem, hogy különleges jelenléte van a tánc során. Ugyanakkor nagyon figyelmes volt a zenére és rám is. Csak egy privát órával később a vezetők, akikkel táncoltam, észrevették a kapcsolatom javulását velük. Szerintem nagyszerű élmény lesz, hogy három hónapig itt lehet vele Oradeában.",
+    "testimonials.title": "Mit mondanak a táncosok Nagyváradon",
+    "testimonials.t1.text": "Amióta először táncoltam Francisco-val, éreztem, hogy különleges jelenléte van a tánc során. Ugyanakkor nagyon figyelmes volt a zenére és rám is. Csak egy privát órával később a vezetők, akikkel táncoltam, észrevették a kapcsolatom javulását velük. Szerintem nagyszerű élmény lesz, hogy három hónapig itt lehet vele Nagyváradon.",
     "testimonials.t1.name": "Eva S.",
     "testimonials.t1.level": "Haladó",
-    "testimonials.t2.text": "A mester túlmutat a puszta technikán, az érzelmi kapcsolatra és a zeneiségre koncentrál, ami átalakította a táncomat és mélyítette a tangó iránti szeretetemet.",
+    "testimonials.t2.text": "A táncoktató túlmutat a puszta technikán, az érzelmi kapcsolatra és a zeneiségre koncentrál, ami átalakította a táncomat és mélyítette a tangó iránti szeretetemet.",
     "testimonials.t2.name": "Simona F.",
     "testimonials.t2.level": "Haladó",
-    "testimonials.t3.text": "Az argentin tangó első lépései kíváncsiságból indultak, de ahogy elkezdtem felfedezni, megértettem, hogy ez nem csak egy egyszerű tánc, és mindig van egy titok, amit felfedezhetünk. Minden oktató, tangó mester új dolgot hozott a tapasztalatomhoz. Az argentin tangó a személyes fejlődésem része.",
+    "testimonials.t3.text": "Az argentin tangó első lépései kíváncsiságból indultak, de ahogy elkezdtem felfedezni, megértettem, hogy ez nem csak egy egyszerű tánc, és mindig van egy titok, amit felfedezhetünk. Minden oktató, tangó táncoktató új dolgot hozott a tapasztalatomhoz. Az argentin tangó a személyes fejlődésem része.",
     "testimonials.t3.name": "Ingrid M.",
     "testimonials.t3.level": "Haladó",
 
@@ -349,7 +349,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "reg.contact2": " vagy a közösségi média csatornáinkon keresztül ",
 
     // Footer
-    "footer.title": "Argentin tangó · Oradea 2026",
+    "footer.title": "Argentin tangó · Nagyvárad 2026",
     "footer.copy": "© 2026 Minden jog fenntartva.",
   },
   

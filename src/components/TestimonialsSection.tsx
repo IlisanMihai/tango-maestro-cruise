@@ -22,7 +22,7 @@ const TestimonialsSection = () => {
         <div className="space-y-12">
           {testimonials.map((item) => (
             <div key={item.key} className="border-l-2 border-gold/30 pl-8 py-2 max-w-2xl">
-              <p className="font-display text-lg md:text-xl italic text-parchment/85 mb-4 leading-relaxed">
+              <p className="font-display text-xl md:text-xl italic text-parchment/85 mb-4 leading-relaxed">
                 &bdquo;{t(`testimonials.${item.key}.text`)}&rdquo;
               </p>
               <p className="font-body text-sm text-muted-foreground">

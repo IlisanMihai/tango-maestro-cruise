@@ -33,13 +33,13 @@ const EventsSection = () => {
                 <div className="absolute left-4 md:left-1/2 w-3 h-3 rounded-full bg-primary border-2 border-gold/40 -translate-x-1/2 mt-1" />
 
                 <div className={`pl-12 md:pl-16 md:w-1/2 ${i % 2 === 0 ? "md:pr-16 md:text-right" : "md:pl-16"}`}>
-                  <span className="font-body text-xs tracking-[0.2em] uppercase text-gold block mb-2">
+                  <span className="font-body text-sm md:text-xs tracking-[0.2em] uppercase text-gold block mb-2">
                     {t(`events.${event.key}.date`)}
                   </span>
                   <h3 className="font-display text-xl md:text-2xl font-semibold text-parchment mb-3">
                     {t(`events.${event.key}.title`)}
                   </h3>
-                  <p className="font-body text-sm text-foreground/70 leading-relaxed">
+                  <p className="font-body text-base md:text-sm text-foreground/70 leading-relaxed">
                     {t(`events.${event.key}.desc`)}
                   </p>
                 </div>

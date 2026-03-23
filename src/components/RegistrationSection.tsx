@@ -8,12 +8,7 @@ const SHEETS_WEBHOOK = "https://script.google.com/macros/s/AKfycbw_Dh3IWnxqzl_zt
 const EMAILJS_PUBLIC_KEY    = "A1c6wF1oHPLirMlL1";
 const EMAILJS_SERVICE_ID    = "service_098m15o";
 const NOTIFICATION_TEMPLATE = "template_iu0mq8f";
-const CONFIRMATION_TEMPLATES = {
-  ro: "template_zauf10g",
-  en: "template_xxxxxxx", // template-ul în engleză
-  es: "template_xxxxxxx", // template-ul în spaniolă
-  hu: "template_xxxxxxx", // template-ul în maghiară
-};
+const CONFIRMATION_TEMPLATE = "template_zauf10g";
 
 const RegistrationSection = () => {
   const { t, language } = useLanguage();
@@ -38,7 +33,7 @@ const RegistrationSection = () => {
       await emailjs.send(EMAILJS_SERVICE_ID, NOTIFICATION_TEMPLATE, formData, EMAILJS_PUBLIC_KEY);
     
       // 2. Send confirmation email to user (EmailJS)
-      await emailjs.send(EMAILJS_SERVICE_ID, CONFIRMATION_TEMPLATES[language], {
+      await emailjs.send(EMAILJS_SERVICE_ID, CONFIRMATION_TEMPLATE, {
         full_name:    formData.name,
         to_email:     formData.email,
         level:        formData.level,
@@ -61,17 +56,17 @@ const RegistrationSection = () => {
   };
 
   const inputClass =
-    "w-full bg-secondary/50 border border-gold/15 rounded-sm px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/40 transition-colors";
+    "w-full bg-secondary/50 border border-gold/15 rounded-sm px-4 py-3 font-body text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-gold/40 transition-colors";
   const selectClass =
     "w-full bg-secondary/50 border border-gold/15 rounded-sm px-4 py-3 font-body text-sm text-foreground focus:outline-none focus:border-gold/40 transition-colors appearance-none";
   return (
     <section id="inscriere" className="py-24 md:py-32 bg-secondary/50">
       <div className="max-w-content mx-auto px-6">
         <div className="max-w-lg mx-auto text-center mb-16">
-          <p className="font-body text-sm tracking-[0.3em] uppercase text-gold mb-4">
+          <p className="font-body text-base md:text-sm tracking-[0.3em] uppercase text-gold mb-4">
             {t("reg.label")}
           </p>
-          <h2 className="font-display text-3xl md:text-5xl font-semibold text-parchment mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-semibold text-parchment mb-4">
             {t("reg.title")}
           </h2>
           <div className="separator-gold mx-auto max-w-[80px]" />
@@ -136,7 +131,7 @@ const RegistrationSection = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary text-primary-foreground py-4 font-body text-sm font-medium tracking-wide rounded-sm hover:brightness-125 transition-all"
+            className="w-full bg-primary text-primary-foreground py-4 font-body text-base md:text-sm font-medium tracking-wide rounded-sm hover:brightness-125 transition-all"
           >
             {isLoading ? (
             <span className="flex items-center justify-center gap-2">
@@ -149,11 +144,11 @@ const RegistrationSection = () => {
             ) : ( t("reg.submit"))}
           </button>
 
-          <p className="font-body text-xs text-muted-foreground text-center">
+          <p className="font-body text-sm md:text-xs text-muted-foreground text-center">
             {t("reg.note")}
           </p>
-          <p className="font-body text-xs text-muted-foreground text-center">
-            {t("reg.contact")} <a href="mailto:oradeatango@gmail.com" className="font-body text-xs tracking-wide text-gold/80 hover:text-gold transition-colors">
+          <p className="font-body text-sm md:text-xs text-muted-foreground text-center">
+            {t("reg.contact")} <a href="mailto:oradeatango@gmail.com" className="font-body text-sm md:text-xs tracking-wide text-gold/80 hover:text-gold transition-colors">
               oradeatango@gmail.com
             </a>
             {t("reg.contact2")} <a href="https://www.facebook.com/events/26660535083543880?active_tab=about" className="font-body text-xs tracking-wide text-gold/80 hover:text-gold transition-colors">
