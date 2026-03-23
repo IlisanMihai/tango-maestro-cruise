@@ -1,17 +1,25 @@
-import heroImage from "@/assets/hero-tango.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
+import heroImage from "@/assets/hero-tango.jpg";
+import heroImageDesktop from "@/assets/hero-desktop.webp";
+import heroImageMobile from "@/assets/hero-mobile.webp";
 
 const HeroSection = () => {
   const { t } = useLanguage();
 
   return (
     <section className="relative min-h-screen flex items-end overflow-hidden">
+      {/* Mobile */}
+      <picture className="absolute inset-0 w-full h-full block md:hidden">
+        <source media="(max-width: 768px)" srcSet={heroImageMobile} type="image/webp"/>
+        <img src={heroImage} className="w-full h-full object-cover" alt="Tango argentinian in Oradea" />
+      </picture>
+      {/* Desktop */}
       <div
-        className="absolute inset-0 bg-cover bg-center md:bg-fixed bg-scroll"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        className="absolute inset-0 bg-cover bg-center md:bg-fixed bg-scroll hidden md:block"
+        style={{ backgroundImage: `url(${heroImageDesktop})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
 
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
       <div className="relative z-10 w-full max-w-content mx-auto px-6 pb-24 pt-32">
         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-semibold leading-[0.95] text-parchment mb-4">
           {t("hero.title1")}<br />
@@ -23,7 +31,7 @@ const HeroSection = () => {
         <p className="font-body text-base text-muted-foreground mb-6 max-w-md">
           {t("hero.description")}
         </p>
-        <p className="font-body text-base font-semibold italic text-gold/70 mb-4 max-w-md">
+        <p className="font-body text-base font-semibold italic text-gold mb-4 max-w-md">
           {t("hero.invitation")}
         </p>
 
@@ -42,7 +50,7 @@ const HeroSection = () => {
           </a>
         </div>
 
-        <p className="font-body text-xs text-gold/70 tracking-wide">
+        <p className="font-body text-xs text-gold tracking-wide">
           {t("hero.urgency")}
         </p>
       </div>

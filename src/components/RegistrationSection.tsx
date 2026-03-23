@@ -105,6 +105,7 @@ const RegistrationSection = () => {
               onChange={(e) => setFormData({ ...formData, level: e.target.value })}
               className={selectClass}
               required
+              aria-label={t("reg.selectLevel")}
             >
               <option value="" disabled>{t("reg.selectLevel")}</option>
               <option value="incepator">{t("reg.beginner")}</option>
@@ -119,6 +120,7 @@ const RegistrationSection = () => {
               onChange={(e) => setFormData({ ...formData, subscription: e.target.value })}
               className={selectClass}
               required
+              aria-label={t("reg.selectPackage")}
             >
               <option value="" disabled>{t("reg.selectPackage")}</option>
               <option value="3 luni">{t("reg.pkgFull")}</option>
@@ -148,10 +150,10 @@ const RegistrationSection = () => {
             {t("reg.note")}
           </p>
           <p className="font-body text-sm md:text-xs text-muted-foreground text-center">
-            {t("reg.contact")} <a href="mailto:oradeatango@gmail.com" className="font-body text-sm md:text-xs tracking-wide text-gold/80 hover:text-gold transition-colors">
+            {t("reg.contact")} <a href="mailto:oradeatango@gmail.com" className="font-body text-sm md:text-xs tracking-wide text-gold hover:text-gold/80 transition-colors">
               oradeatango@gmail.com
             </a>
-            {t("reg.contact2")} <a href="https://www.facebook.com/events/26660535083543880?active_tab=about" className="font-body text-xs tracking-wide text-gold/80 hover:text-gold transition-colors">
+            {t("reg.contact2")} <a href="https://www.facebook.com/events/26660535083543880?active_tab=about" className="font-body text-xs tracking-wide text-gold hover:text-gold/80 transition-colors">
             Facebook
             </a>
           </p>

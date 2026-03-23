@@ -26,7 +26,7 @@ const TestimonialsSection = () => {
                 &bdquo;{t(`testimonials.${item.key}.text`)}&rdquo;
               </p>
               <p className="font-body text-sm text-muted-foreground">
-                {t(`testimonials.${item.key}.name`)} · <span className="text-gold/70">{t(`testimonials.${item.key}.level`)}</span>
+                {t(`testimonials.${item.key}.name`)} · <span className="text-gold">{t(`testimonials.${item.key}.level`)}</span>
               </p>
             </div>
           ))}
