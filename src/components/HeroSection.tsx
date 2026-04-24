@@ -1,4 +1,5 @@
 import { useLanguage } from "@/i18n/LanguageContext";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-tango.jpg";
 import heroImageDesktop from "@/assets/hero-desktop.webp";
 import heroImageMobile from "@/assets/hero-mobile.webp";
@@ -48,6 +49,12 @@ const HeroSection = () => {
           >
             {t("hero.schedule")}
           </a>
+          <Link
+            to="/event"
+            className="inline-block bg-accent text-accent-foreground px-8 py-3.5 font-body text-base md:text-sm font-medium tracking-wide rounded-sm hover:brightness-125 transition-all"
+          >
+            Special Event
+          </Link>
         </div>
 
         <p className="font-body text-xs text-gold tracking-wide">
