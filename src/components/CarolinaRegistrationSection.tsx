@@ -35,7 +35,7 @@ const CarolinaRegistrationSection = () => {
         {
           name: formData.name,
           email: formData.email,
-          pachet: formData.package,
+          package: formData.package,
         },
         EMAILJS_PUBLIC_KEY
       );
@@ -119,7 +119,7 @@ const CarolinaRegistrationSection = () => {
               </option>
               <option value="fullPass">{t("carolina.reg.fullPass")}</option>
               <option value="dayPass">{t("carolina.reg.dayPass")}</option>
-              <option value="workshop">{t("carolina.reg.workshop")}</option>
+              <option value="oneWorkshop">{t("carolina.reg.workshop")}</option>
               <option value="milongaPass">
                 {t("carolina.reg.milongaPass")}
               </option>

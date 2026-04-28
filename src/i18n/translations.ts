@@ -677,7 +677,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "carolina.event.title": "Fin de semana intensivo de tango con \nCarolina Jador",
     "carolina.event.subtitle": "4 Talleres + 1 Milonga con 2 TDJ argentinos para una experiencia de tango auténtica.",
     "carolina.event.about": "Bailarina – Docente – Coreógrafa – DJ de Tango Argentino",
-    "carolina.event.intro": "Carolina Jador es una bailarina y docente de tango argentino con casi 30 años de trayectoria en la danza. Desarrolla su actividad artística como profesora, coreógrafa, musicalizadora y organizadora de eventos de tango en Argentina y en el exterior.",
+    "carolina.event.intro": "Carolina Jador es una bailarina y profesora de tango argentino con casi 30 años de trayectoria en la danza. Desarrolla su actividad artística como profesora, coreógrafa, musicalizadora y organizadora de eventos de tango en Argentina y en el exterior.",
     "carolina.event.training.title": "Formación",
     "carolina.event.training.text": "Inició su formación en danzas clásicas y españolas y posteriormente continuó su desarrollo en diversas disciplinas como tango argentino, danzas folklóricas, danza contemporánea, danza jazz, salsa, bachata y ritmos latinos.\n\nSe ha perfeccionado con destacados maestros del tango argentino como Miguel Ángel Zotto, Fabián Peralta, Gabriel Missé, Sebastián Achával, Demian García, Alejandra Martiñán y Roberto Herrera, entre otros.",
     "carolina.event.professional.title": "Actividad profesional",
@@ -691,22 +691,22 @@ export const translations: Record<Language, Record<string, string>> = {
     "carolina.event.international.text": "Ha realizado viajes y giras artísticas por Europa y Brasil, dictando clases, seminarios, exhibiciones y musicalizando milongas en distintos espacios culturales.",
     "carolina.event.cultural.title": "Gestión cultural",
     "carolina.event.cultural.text": "Creadora de la milonga \"Taconeando con la Morocha\", con 18 años de trayectoria, declarada de interés cultural, municipal, provincial y por la Cámara de Diputados.\n\nEn este espacio ha convocado a importantes exponentes del tango como Miguel Ángel Zotto y Roberto Herrera, y a reconocidas orquestas como La Juan D’Arienzo y Sexteto Milonguero, entre otras.",
-    "carolina.event.urgency": "Early bird para inscripciones hasta el 13 de mayo de 2026",
+    "carolina.event.urgency": "Precio anticipado para inscripciones hasta el 13 de mayo de 2026",
 
     // Carolina program
     "carolina.program.title": "El programa del evento",
     "carolina.program.subtitle": "El tema de los talleres:\nEl abrazo como motor principal del baile",
     "carolina.program.event1.date": "23 de mayo de 2026, sábado",
     "carolina.program.event1.title": "13:00 – 14:30\nTaller 1: Tango",
-    "carolina.program.event1.desc": "Adornos & voleos: Descubrimos cómo darle estilo y personalidad a nuestro baile, mientras mantenemos la conexión y la musicalidad.",
+    "carolina.program.event1.desc": "Adornos y voleos: Descubrimos cómo darle estilo y personalidad a nuestro baile, mientras mantenemos la conexión y la musicalidad.",
     "carolina.program.2event1.title": "14:45 – 16:15\nTaller 2: Tango",
-    "carolina.program.2event1.desc": "Pivots & ganchos: Nos adentramos más en la mecánica de los pivots y ganchos, entendiendo cómo integrarlos perfectamente en nuestro baile.",  
+    "carolina.program.2event1.desc": "Pivots y ganchos: Nos adentramos más en la mecánica de los pivots y ganchos, entendiendo cómo integrarlos perfectamente en nuestro baile.",  
     "carolina.program.event2.date": "23 de mayo de 2026, sábado por la noche",
     "carolina.program.event2.title": "21:00 – 02:00\nMilonga especial con 2 TDJ argentinos",
     "carolina.program.event2.desc": "Una noche especial para experimentar la atmósfera de una milonga auténtica de Buenos Aires, con dos TDJ argentinos, Carolina Jador y Francisco Iturrieta.", 
     "carolina.program.event3.date": "24 de mayo de 2026, domingo",
     "carolina.program.event3.title": "14:30 – 16:00\nTaller 3: Milonga",
-    "carolina.program.event3.desc": "Cadencia & traspiés: Nos enfocamos en los aspectos rítmicos del tango, explorando cómo crear y jugar con la cadencia en el baile.",
+    "carolina.program.event3.desc": "Cadencia y traspiés: Nos enfocamos en los aspectos rítmicos de la Milonga Portena, explorando cómo crear y jugar con la cadencia en el baile.",
     "carolina.program.2event3.title": "16:15 – 17:45\nTaller 4: Vals",
     "carolina.program.2event3.desc": "Secuencias con sacadas. Exploramos el mundo del Vals, aprendiendo a crear secuencias fluidas con elementos de sacada.",
     
@@ -721,7 +721,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "carolina.prices.earlyBird.desc": "*Precio anticipado para inscripciones hasta el 13 de mayo de 2026",
     "carolina.prices.regularPrice": "Precio regular",
     "carolina.prices.fullPass": "Pase completo (todos los talleres + milonga)",
-    "carolina.prices.milongaPass": "Pase de milonga",
+    "carolina.prices.milongaPass": "Pase de la Milonga",
     "carolina.prices.workshop": "Un taller",
     "carolina.prices.dayPass": "Pase de día (2 talleres + milonga)",
     "carolina.prices.fullPass.earlyBird": "50€",
@@ -735,7 +735,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Carolina registration
     "carolina.reg.fullPass": "Pase completo",
-    "carolina.reg.milongaPass": "Pase de milonga",
+    "carolina.reg.milongaPass": "Pase de la Milonga",
     "carolina.reg.workshop": "Un taller",
     "carolina.reg.dayPass": "Pase de día",
   }
