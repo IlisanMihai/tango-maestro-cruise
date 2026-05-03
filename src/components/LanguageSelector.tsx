@@ -7,6 +7,7 @@ const flags: Record<Language, string> = {
   en: "/flags/en.svg",
   hu: "/flags/hu.svg",
   es: "/flags/es.svg",
+  sk: "/flags/sk.svg",
 };
 
 const LanguageSelector = () => {
@@ -31,7 +32,7 @@ const LanguageSelector = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  const langs: Language[] = ["ro", "en", "hu", "es"];
+  const langs: Language[] = ["ro", "en", "hu", "es", "sk"];
 
   return (
     <div className={`fixed top-4 right-4 z-50 flex gap-1 bg-background/80 backdrop-blur-sm border border-gold/20 rounded-sm p-1 transition-all duration-300 ${
