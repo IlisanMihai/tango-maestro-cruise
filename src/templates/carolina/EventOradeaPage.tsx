@@ -1,14 +1,14 @@
 import { useEffect } from "react";
-import { useLanguage } from "@/i18n/LanguageContext";
+import { useTranslation } from "react-i18next";
 import LanguageSelector from "@/components/LanguageSelector";
 import Footer from "@/components/Footer";
-import CarolinaRegistrationSection from "@/components/CarolinaRegistrationSection";
+import CarolinaRegistrationSection from "./CarolinaRegistrationSection";
 import { setPageMetadata } from "@/lib/utils";
 import heroImage from "@/assets/hero-carolina.webp";
 import heroImageMobile from "@/assets/hero-carolina-mobile.webp";
 
 const EventOradea = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation("legacy");
 
   useEffect(() => {
     setPageMetadata({
@@ -20,7 +20,12 @@ const EventOradea = () => {
     });
   }, []);
 
-  const events = [{ key: "event1" }, { key: "event2" }, { key: "event3" }];
+  // "second" = the second workshop of the same day.
+  const events = [
+    { key: "event1", second: "2event1" },
+    { key: "event2" },
+    { key: "event3", second: "2event3" },
+  ] as const;
 
   return (
     <main>
@@ -160,21 +165,21 @@ const EventOradea = () => {
                     }`}
                   >
                     <span className="font-body text-sm md:text-xs tracking-[0.2em] uppercase text-gold block mb-2">
-                      {t(`carolina.program.${event.key}.date`)}
+                      {t(`carolina.program.${event.key}.date` as const)}
                     </span>
                     <h3 className="font-display text-xl md:text-2xl font-semibold text-parchment whitespace-pre-line">
-                      {t(`carolina.program.${event.key}.title`)}
+                      {t(`carolina.program.${event.key}.title` as const)}
                     </h3>
                     <p className="font-body text-base md:text-sm text-foreground/70 leading-relaxed mb-3">
-                      {t(`carolina.program.${event.key}.desc`)}
+                      {t(`carolina.program.${event.key}.desc` as const)}
                     </p>
-                    {i % 2 === 0 && (
+                    {"second" in event && (
                       <div className="relative">
                         <h3 className="font-display text-xl md:text-2xl font-semibold text-parchment whitespace-pre-line">
-                          {t(`carolina.program.2${event.key}.title`)}
+                          {t(`carolina.program.${event.second}.title` as const)}
                         </h3>
                         <p className="font-body text-base md:text-sm text-foreground/70 leading-relaxed">
-                          {t(`carolina.program.2${event.key}.desc`)}
+                          {t(`carolina.program.${event.second}.desc` as const)}
                         </p>
                       </div>
                     )}

@@ -1,7 +1,7 @@
-import { useLanguage } from "@/i18n/LanguageContext";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   return (
     <footer className="py-12 border-t border-gold/10">
@@ -10,7 +10,7 @@ const Footer = () => {
           {t("footer.title")}
         </p>
         <p className="font-body text-xs text-muted-foreground">
-          {t("footer.copy")}
+          {t("footer.copy", { year: new Date().getFullYear() })}
         </p>
       </div>
     </footer>
