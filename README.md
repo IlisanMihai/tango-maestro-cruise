@@ -71,3 +71,60 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Supabase (etapa 1: baza de date + securitate)
+
+Fișierele sunt în `supabase/`:
+
+- `migrations/…_events_profiles.sql`: tipuri, tabelele `events` și `profiles`, RLS
+- `migrations/…_event_images_storage.sql`: bucket-ul public `event-images` + reguli de upload
+- `seed.sql`: un singur eveniment (weekendul Carolina Jador, publicat)
+- `checks/rls_check.sql`: verifică regulile de securitate (rulează totul într-o tranzacție cu ROLLBACK, nu lasă nimic în urmă)
+
+### 1. Creează proiectul
+
+1. [supabase.com](https://supabase.com) → **New project**, regiunea **Central EU (Frankfurt)**. Salvează parola bazei de date în managerul de parole.
+   - **Enable Data API**: bifat (site-ul citește evenimentele prin el).
+   - **Automatically expose new tables**: debifat (recomandat; migrațiile dau singure permisiunile necesare).
+   - **Enable automatic RLS**: bifat.
+2. După ce proiectul e creat: **Authentication → Sign In / Providers** (în unele versiuni **Authentication → Settings**): dezactivează **Allow new users to sign up** (conturile de staff le inviți tu).
+
+### 2. Rulează migrațiile
+
+**Varianta A: SQL Editor (fără instalări).** Copiază și rulează, în ordine:
+`supabase/migrations/20261009000000_events_profiles.sql`, apoi `…000100_event_images_storage.sql`, apoi `supabase/seed.sql`.
+
+**Varianta B: Supabase CLI.**
+
+```bash
+npx supabase login
+npx supabase link --project-ref <project-ref>
+npx supabase db push --include-seed
+```
+
+### 3. Fă-te admin
+
+1. **Authentication → Users → Add user → Create new user**, cu emailul tău, o parolă și **Auto Confirm User** bifat. Profilul se creează automat, **inactiv**, cu rolul `editor`.
+   Nu folosi încă **Send invitation**: linkul din email duce la „Site URL” (implicit `http://localhost:3000`), iar pagina de setare a parolei vine abia în etapa de login/admin.
+   Setează între timp **Authentication → URL Configuration → Site URL** la `http://localhost:8080` (la lansare va deveni adresa site-ului).
+2. În SQL Editor:
+
+```sql
+update public.profiles set role = 'admin', active = true where email = 'emailul-tau@exemplu.ro';
+```
+
+Editorii noi îi activezi la fel (`active = true`, rolul rămâne `editor`). Dacă ai creat utilizatori **înainte** de migrații, adaugă-le profilul cu
+`insert into public.profiles (id, email) select id, email from auth.users on conflict do nothing;`.
+
+### 4. Verifică securitatea
+
+Rulează `supabase/checks/rls_check.sql` în SQL Editor. Dacă nu apare nicio eroare `FAIL: …`, toate regulile sunt respectate (editorul nu poate modifica evenimentele altora, nu poate șterge, nu-și poate schimba rolul etc.).
+
+### 5. Variabile de mediu
+
+Din **Project Settings → API** (sau **API Keys**) ia **Project URL** și cheia **anon / publishable** (cheia publică). **Nu** folosi niciodată cheia `service_role` / `secret` în frontend.
+
+- **Local:** copiază `.env.example` în `.env.local` (fișierul e ignorat de git) și completează valorile. Apoi:
+  - `npm run supabase:check`: citește evenimentele cu cheia publică și verifică faptul că un vizitator nu poate scrie
+  - `npm run dev` și deschide `http://localhost:8080/dev/supabase` (pagină doar pentru dev, nu ajunge în producție)
+- **Netlify:** Site configuration → Environment variables → adaugă `VITE_SUPABASE_URL` și `VITE_SUPABASE_ANON_KEY`, apoi fă un redeploy (Vite le include la build).
