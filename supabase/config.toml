@@ -1,0 +1,15 @@
+# Minimal Supabase CLI config (used only by the local stack: `supabase start` / `db reset`).
+# The hosted project's settings are managed in the Supabase dashboard.
+project_id = "tango-maestro-cruise"
+
+[db]
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[auth]
+site_url = "http://localhost:8080"
+# Staff accounts are invited by an admin; no public sign-ups.
+enable_signup = false
