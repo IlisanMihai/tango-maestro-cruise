@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatEventDates, localizedText } from "./events";
+import { formatEventDates, googleCalendarUrl, hasEnded, isEventType, localizedText, parseEventTypes } from "./events";
 
 describe("localizedText", () => {
   const text = { ro: "Milonga de toamnă", en: "Autumn milonga", hu: "  " };
@@ -33,5 +33,50 @@ describe("formatEventDates (Romanian time)", () => {
     const text = formatEventDates("2026-11-07T19:00:00Z", "2026-11-07T19:00:00Z", "ro");
     expect(text).toContain("21:00");
     expect(text).not.toContain("–");
+  });
+});
+
+describe("googleCalendarUrl / hasEnded", () => {
+  const event = {
+    id: "1",
+    slug: "milonga",
+    type: "milonga" as const,
+    start_at: "2026-11-07T19:00:00Z",
+    end_at: "2026-11-07T23:30:00Z",
+    title: { ro: "Milonga", en: "Milonga EN" },
+    summary: { ro: "Descriere" },
+    content: null,
+    location: "Oradea",
+    image_path: null,
+    external_url: null,
+    status: "published" as const,
+    created_by: null,
+    created_at: "",
+    updated_at: "",
+  };
+
+  it("builds a Google Calendar link with UTC times, place and page URL", () => {
+    const url = new URL(googleCalendarUrl(event, "en", "https://oradeatango.ro/en/events/milonga"));
+    expect(url.hostname).toBe("calendar.google.com");
+    expect(url.searchParams.get("text")).toBe("Milonga EN");
+    expect(url.searchParams.get("dates")).toBe("20261107T190000Z/20261107T233000Z");
+    expect(url.searchParams.get("location")).toBe("Oradea");
+    expect(url.searchParams.get("details")).toContain("https://oradeatango.ro/en/events/milonga");
+  });
+
+  it("knows when an event is over", () => {
+    expect(hasEnded(event, new Date("2026-11-08T00:00:00Z"))).toBe(true);
+    expect(hasEnded(event, new Date("2026-11-07T22:00:00Z"))).toBe(false);
+  });
+
+  it("recognises event types", () => {
+    expect(isEventType("milonga")).toBe(true);
+    expect(isEventType("party")).toBe(false);
+  });
+
+  it("parses several types from the URL, dropping unknown ones", () => {
+    expect(parseEventTypes("practica,milonga,party")).toEqual(["milonga", "practica"]);
+    expect(parseEventTypes("")).toEqual([]);
+    expect(parseEventTypes(null)).toEqual([]);
   });
 });

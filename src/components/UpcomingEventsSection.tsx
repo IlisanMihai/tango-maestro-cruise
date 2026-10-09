@@ -42,7 +42,7 @@ const UpcomingEventsSection = () => {
         ) : data.length === 0 ? (
           <p className="font-body text-base text-muted-foreground md:text-center">{t("home.upcoming.empty")}</p>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-testid="event-grid">
             {data.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}

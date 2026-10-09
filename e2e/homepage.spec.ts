@@ -1,61 +1,8 @@
 import { devices } from "@playwright/test";
-import { test, expect, type Page } from "../playwright-fixture";
+import { test, expect } from "../playwright-fixture";
+import { mockSupabase } from "./support/supabaseMock";
 
-const DAY = 24 * 60 * 60 * 1000;
-const at = (days: number, hourUtc: number) => {
-  const d = new Date(Date.now() + days * DAY);
-  d.setUTCHours(hourUtc, 0, 0, 0);
-  return d.toISOString();
-};
-
-// Fake Supabase answers so the screenshots always show three cards.
-const events = [
-  {
-    slug: "milonga-de-toamna",
-    type: "milonga",
-    start_at: at(3, 18),
-    end_at: at(3, 23),
-    title: { ro: "Milonga de toamnă", en: "Autumn milonga" },
-    summary: { ro: "O seară caldă de tango, cu muzică de epocă de aur și invitați din toată țara.", en: "A warm tango evening with golden-age music and guests from all over the country." },
-    location: "Feeling Dance Studio, Oradea",
-  },
-  {
-    slug: "festival-oradea-tango",
-    type: "festival",
-    start_at: at(12, 9),
-    end_at: at(14, 20),
-    title: { ro: "Festivalul de tango Oradea", en: "Oradea tango festival" },
-    summary: { ro: "Trei zile de workshop-uri, milongi și concerte live.", en: "Three days of workshops, milongas and live concerts." },
-    location: "Oradea",
-  },
-  {
-    slug: "practica-de-joi",
-    type: "practica",
-    start_at: at(20, 17),
-    end_at: at(20, 19),
-    title: { ro: "Practică ghidată" },
-    summary: null,
-    location: "Latino Vibes Studio, Oradea",
-  },
-].map((e, i) => ({
-  id: `00000000-0000-4000-a000-00000000000${i}`,
-  content: null,
-  image_path: null,
-  external_url: null,
-  status: "published",
-  created_by: null,
-  created_at: "",
-  updated_at: "",
-  ...e,
-}));
-
-async function mockEvents(page: Page, mode: "ok" | "fail" = "ok") {
-  await page.route("**/rest/v1/events**", (route) =>
-    mode === "ok"
-      ? route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(events) })
-      : route.abort(),
-  );
-}
+const mockEvents = mockSupabase;
 
 const expectedColumns: Record<string, number> = {
   "phone-portrait": 1,
@@ -83,7 +30,7 @@ test("homepage (ro): hero, next 3 events, community, footer", async ({ page }, t
   expect(order).toEqual([...order].sort((a, b) => a - b));
   expect(order.every((y) => y >= 0)).toBe(true);
 
-  const grid = page.locator("#events .grid");
+  const grid = page.locator("#events").getByTestId("event-grid");
   const columns = await grid.evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
   expect(columns).toBe(expectedColumns[testInfo.project.name]);
 
@@ -142,9 +89,20 @@ test("homepage still works when Supabase is unreachable", async ({ page }) => {
   await expect(page.locator("#events")).toHaveCount(0, { timeout: 15_000 });
 });
 
-test("/event (Carolina Jador page) is still available until /events exists", async ({ page }) => {
-  await page.goto("/event");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Carolina Jador");
+test("the old /event address redirects to /events on Netlify", async () => {
+  const fs = await import("node:fs");
+  const lines = fs.readFileSync("public/_redirects", "utf8").trim().split(/\r?\n/);
+  // must come before the SPA catch-all, or it would never match
+  expect(lines.indexOf("/event /events 301")).toBeGreaterThanOrEqual(0);
+  expect(lines.indexOf("/event /events 301")).toBeLessThan(lines.indexOf("/* /index.html 200"));
+});
+
+test("'See the events' opens the events page", async ({ page }) => {
+  await mockEvents(page);
+  await page.goto("/");
+  await page.getByRole("link", { name: "Vezi evenimentele" }).click();
+  await expect(page).toHaveURL(/\/events$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Evenimente" })).toBeVisible();
 });
 
 test("unknown pages show the 404 page in the right language", async ({ page }) => {

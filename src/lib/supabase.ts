@@ -14,7 +14,6 @@ export type I18nText = { ro: string } & Partial<Record<Exclude<Locale, "ro">, st
 
 export type EventType =
   | "altul"
-  | "concert"
   | "curs"
   | "encuentro"
   | "festival"

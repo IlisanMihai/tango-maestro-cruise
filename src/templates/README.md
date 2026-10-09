@@ -5,7 +5,7 @@ Textele sunt în `src/locales/<limbă>/legacy.json` (namespace-ul i18next `legac
 
 | Fișier | Ce este |
 | --- | --- |
-| `carolina/EventOradeaPage.tsx` | Pagina weekendului cu Carolina Jador (`/event`), cu program, prețuri și înscriere |
+| `carolina/EventOradeaPage.tsx` | Pagina weekendului cu Carolina Jador (fosta `/event`, acum redirecționată spre `/events`), cu program, prețuri și înscriere |
 | `carolina/CarolinaRegistrationSection.tsx` | Formularul de înscriere al evenimentului (EmailJS + Google Sheets) |
 | `registration/RegistrationSection.tsx` | Formularul de înscriere la cursurile de 3 luni (EmailJS + Google Sheets) |
 

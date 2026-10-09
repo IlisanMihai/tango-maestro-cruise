@@ -12,8 +12,9 @@ import NotFound from "./pages/NotFound.tsx";
 // Dev-only Supabase read check; the DEV guard keeps it out of production bundles.
 const DevSupabaseCheck = import.meta.env.DEV ? lazy(() => import("./pages/DevSupabaseCheck.tsx")) : null;
 
-// Kept live until /events exists (stage 3), then replaced by a redirect. Loaded on demand.
-const EventOradeaPage = lazy(() => import("./templates/carolina/EventOradeaPage.tsx"));
+// Loaded on demand, so the homepage stays light.
+const EventsPage = lazy(() => import("./pages/EventsPage.tsx"));
+const EventDetailPage = lazy(() => import("./pages/EventDetailPage.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -38,10 +39,18 @@ const App = () => (
           <Route path="/:lng?" element={<LanguageLayout />}>
             <Route index element={<Index />} />
             <Route
-              path="event"
+              path="events"
               element={
                 <Suspense fallback={null}>
-                  <EventOradeaPage />
+                  <EventsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="events/:slug"
+              element={
+                <Suspense fallback={null}>
+                  <EventDetailPage />
                 </Suspense>
               }
             />
