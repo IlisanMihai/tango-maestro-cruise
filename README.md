@@ -93,6 +93,7 @@ Fișierele sunt în `supabase/`:
 
 **Varianta A: SQL Editor (fără instalări).** Copiază și rulează, în ordine:
 `supabase/migrations/20261009000000_events_profiles.sql`, apoi `…000100_event_images_storage.sql`, apoi `supabase/seed.sql`.
+Migrațiile adăugate ulterior (ex. `20261010000000_remove_concert_type.sql`) se rulează la fel, o singură dată fiecare, în ordinea numelui.
 
 **Varianta B: Supabase CLI.**
 
@@ -128,3 +129,10 @@ Din **Project Settings → API** (sau **API Keys**) ia **Project URL** și cheia
   - `npm run supabase:check`: citește evenimentele cu cheia publică și verifică faptul că un vizitator nu poate scrie
   - `npm run dev` și deschide `http://localhost:8080/dev/supabase` (pagină doar pentru dev, nu ajunge în producție)
 - **Netlify:** Site configuration → Environment variables → adaugă `VITE_SUPABASE_URL` și `VITE_SUPABASE_ANON_KEY`, apoi fă un redeploy (Vite le include la build).
+
+### 6. Pagina de evenimente și previzualizarea pe rețele (etapa 3)
+
+- `/events` (tab-uri Active / Trecute, filtru `?type=milonga`) și `/events/<slug>`; în celelalte limbi `/en/events`, `/hu/events` ...
+- Vechea adresă `/event` e redirecționată permanent (301) spre `/events` din `public/_redirects`.
+- `netlify/edge-functions/event-meta/` pune titlul, descrierea și poza evenimentului în HTML-ul paginii `/events/<slug>`, ca Facebook/WhatsApp să afișeze o previzualizare corectă (ei nu rulează JavaScript). Folosește aceleași variabile `VITE_SUPABASE_URL` și `VITE_SUPABASE_ANON_KEY`: în Netlify, la fiecare variabilă, lasă **Scopes** pe „All scopes” (sau bifează și **Functions**). Dacă lipsesc, pagina merge normal, doar fără previzualizare personalizată.
+- Verificare după deploy: lipește linkul unui eveniment în [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/).

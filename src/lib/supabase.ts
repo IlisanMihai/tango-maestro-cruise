@@ -1,13 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from "./supabaseConfig";
 
-// Tolerate a pasted REST endpoint (".../rest/v1/"): the client needs the bare project URL.
-const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)
-  ?.trim()
-  .replace(/\/rest\/v1\/?$/, "")
-  .replace(/\/$/, "");
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export { isSupabaseConfigured };
 
 /** null when VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are not set (e.g. a build without env vars). */
 export const supabase = isSupabaseConfigured
@@ -20,7 +14,6 @@ export type I18nText = { ro: string } & Partial<Record<Exclude<Locale, "ro">, st
 
 export type EventType =
   | "altul"
-  | "concert"
   | "curs"
   | "encuentro"
   | "festival"

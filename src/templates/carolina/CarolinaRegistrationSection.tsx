@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { useLanguage } from "@/i18n/LanguageContext";
+import { useTranslation } from "react-i18next";
 import emailjs from "@emailjs/browser";
 import ChevronDown from "@/components/ChevronDown";
 
@@ -11,7 +11,7 @@ const EMAILJS_SERVICE_ID = "service_098m15o";
 const CONFIRMATION_TEMPLATE = "template_iu0mq8f";
 
 const CarolinaRegistrationSection = () => {
-  const { t, language } = useLanguage();
+  const { t } = useTranslation("legacy");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
