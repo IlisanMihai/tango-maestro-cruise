@@ -60,7 +60,6 @@ const ActiveEvents = ({ types }: { types: EventType[] }) => {
     queryKey: ["events", "active", types.join(",")],
     queryFn: () => fetchActiveEvents({ types }),
     enabled: isSupabaseConfigured,
-    staleTime: 60_000,
     retry: false,
   });
 
@@ -90,7 +89,6 @@ const PastEvents = ({ types }: { types: EventType[] }) => {
     initialPageParam: 0,
     getNextPageParam: (last, pages) => (last.hasMore ? pages.length : undefined),
     enabled: isSupabaseConfigured,
-    staleTime: 60_000,
     retry: false,
   });
 

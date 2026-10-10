@@ -123,6 +123,15 @@ export function localizedText(text: I18nText | null | undefined, language: Langu
   return text[language]?.trim() || text.ro;
 }
 
+/** Google Maps link: the exact point picked in the admin, else a search for the address. */
+export function mapsUrl(event: Pick<EventRow, "location" | "latitude" | "longitude">): string {
+  const query =
+    event.latitude !== null && event.longitude !== null && event.latitude !== undefined && event.longitude !== undefined
+      ? `${event.latitude},${event.longitude}`
+      : event.location ?? "";
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 /** Public URL of a file in the 'event-images' bucket (same format as storage.getPublicUrl). */
 export function eventImageUrl(imagePath: string | null): string | null {
   if (!imagePath || !supabaseUrl) return null;

@@ -31,6 +31,8 @@ const event = (slug: string, title: string): EventRow => ({
   summary: null,
   content: null,
   location: "Oradea",
+  latitude: null,
+  longitude: null,
   image_path: null,
   external_url: null,
   status: "published",

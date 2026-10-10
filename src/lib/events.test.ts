@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatEventDates, googleCalendarUrl, hasEnded, isEventType, localizedText, parseEventTypes } from "./events";
+import { formatEventDates, googleCalendarUrl, hasEnded, isEventType, localizedText, mapsUrl, parseEventTypes } from "./events";
 
 describe("localizedText", () => {
   const text = { ro: "Milonga de toamnă", en: "Autumn milonga", hu: "  " };
@@ -47,6 +47,8 @@ describe("googleCalendarUrl / hasEnded", () => {
     summary: { ro: "Descriere" },
     content: null,
     location: "Oradea",
+    latitude: null,
+    longitude: null,
     image_path: null,
     external_url: null,
     status: "published" as const,
@@ -78,5 +80,19 @@ describe("googleCalendarUrl / hasEnded", () => {
     expect(parseEventTypes("practica,milonga,party")).toEqual(["milonga", "practica"]);
     expect(parseEventTypes("")).toEqual([]);
     expect(parseEventTypes(null)).toEqual([]);
+  });
+});
+
+describe("mapsUrl", () => {
+  it("opens the exact point when the event has one", () => {
+    expect(mapsUrl({ location: "Oradea", latitude: 47.0631, longitude: 21.9372 })).toBe(
+      "https://www.google.com/maps/search/?api=1&query=47.0631%2C21.9372",
+    );
+  });
+
+  it("searches the address otherwise", () => {
+    expect(mapsUrl({ location: "Strada Sovata 1B, Oradea", latitude: null, longitude: null })).toBe(
+      "https://www.google.com/maps/search/?api=1&query=Strada%20Sovata%201B%2C%20Oradea",
+    );
   });
 });

@@ -198,7 +198,11 @@ test("event page shows everything about the event", async ({ page }, testInfo) =
 
   await expect(page).toHaveURL(/\/events\/milonga-de-toamna$/);
   await expect(page.getByRole("heading", { level: 1, name: "Milonga de toamnă" })).toBeVisible();
-  await expect(page.getByText("Feeling Dance Studio, Oradea")).toHaveAttribute("href", /google\.com\/maps/);
+  // the map link opens the exact point picked in the admin
+  await expect(page.getByText("Feeling Dance Studio, Oradea")).toHaveAttribute(
+    "href",
+    "https://www.google.com/maps/search/?api=1&query=47.0599%2C21.9271",
+  );
   await expect(page.getByText("O seară caldă de tango")).toBeVisible();
   await expect(page.getByText("Intrarea: 30 lei.")).toBeVisible();
   await expect(page.getByRole("link", { name: /Mai multe informații/ })).toHaveAttribute(
