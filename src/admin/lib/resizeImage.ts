@@ -5,7 +5,7 @@ export const MAX_IMAGE_SIDE = 1600;
  * WebP (JPEG where the browser cannot encode WebP). Keeps phone photos of
  * several MB down to a few hundred KB.
  */
-export async function resizeImage(file: File, maxSide = MAX_IMAGE_SIDE): Promise<Blob> {
+export async function resizeImage(file: Blob, maxSide = MAX_IMAGE_SIDE): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
   const width = Math.round(bitmap.width * scale);

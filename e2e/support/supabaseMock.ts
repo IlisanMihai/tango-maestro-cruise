@@ -263,6 +263,28 @@ export async function mockSupabase(page: Page | BrowserContext, mode: "ok" | "fa
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(rows) });
     });
     // Recovery email ("forgot password") and the invite-user Edge Function.
+    // "Fill in from a link"
+    await page.route("**/functions/v1/link-preview", (route) => {
+      const { mode, url } = route.request().postDataJSON();
+      if (mode === "image") {
+        return route.fulfill({
+          status: 200,
+          contentType: "application/octet-stream",
+          headers: { "X-Image-Type": "image/webp" },
+          body: readFileSync("src/assets/hero-mobile.webp"),
+        });
+      }
+      const preview = String(url).includes("fara-meta")
+        ? { title: null, description: null, image: null, siteName: null, url }
+        : {
+            title: "Milonga la castel",
+            description: `O seară de tango în curtea castelului. ${"Muzică live, dans și prieteni din toată țara. ".repeat(10)}`.trim(),
+            image: "https://img.example.ro/poster.jpg",
+            siteName: "Facebook",
+            url,
+          };
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(preview) });
+    });
     await page.route("**/rest/v1/rpc/set_my_name", (route) => {
       const { new_name } = route.request().postDataJSON();
       nameChanges.push(new_name);

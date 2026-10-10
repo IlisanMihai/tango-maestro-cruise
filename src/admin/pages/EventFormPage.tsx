@@ -14,7 +14,16 @@ import { LANGUAGES } from "@/i18n/languages";
 import defaultEventImage from "@/assets/hero-mobile.webp";
 import { notifyEventsChanged } from "@/lib/eventsSync";
 import { useAuth } from "../auth";
-import { SlugTakenError, fetchEventById, saveEvent, uploadEventImage } from "../lib/api";
+import {
+  InviteError,
+  SlugTakenError,
+  fetchEventById,
+  fetchLinkImage,
+  fetchLinkPreview,
+  saveEvent,
+  uploadEventImage,
+  type LinkPreview,
+} from "../lib/api";
 import {
   emptyEventForm,
   eventFormSchema,
@@ -26,7 +35,9 @@ import { EVENT_TYPE_LABELS, EVENT_TYPE_OPTIONS, LANGUAGE_NAMES } from "../lib/la
 import { resizeImage } from "../lib/resizeImage";
 import DateTimePicker from "../components/DateTimePicker";
 import LocationPicker from "../components/LocationPicker";
+import LinkPrefill from "../components/LinkPrefill";
 import { slugify } from "../lib/slug";
+import { shortSummary } from "../lib/text";
 
 const inputClass =
   "w-full rounded-sm border border-gold/20 bg-secondary/50 px-3 py-2.5 font-body text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none aria-[invalid=true]:border-destructive";
@@ -76,6 +87,23 @@ function snapshot(v: Partial<EventFormValues>): string {
     texts(v.summary),
     texts(v.content),
   ]);
+}
+
+function prefillErrorMessage(error: unknown): string {
+  const code = error instanceof InviteError ? error.code : "";
+  switch (code) {
+    case "bad_url":
+      return "Linkul nu pare valid. Copiază adresa completă, care începe cu https://";
+    case "page_unreachable":
+    case "not_html":
+      return "Pagina nu a putut fi citită. Verifică linkul sau completează manual.";
+    case "gateway_jwt":
+      return "Supabase a refuzat cererea: la funcția „link-preview” dezactivează opțiunea „Verify JWT”.";
+    case "unreachable":
+      return "Funcția „link-preview” nu răspunde. Verifică dacă este publicată în Supabase (README, secțiunea 9).";
+    default:
+      return "Datele de la link nu au putut fi preluate. Completează manual.";
+  }
 }
 
 function readDraft(key: string): EventFormValues | null {
@@ -212,6 +240,67 @@ const EventFormPage = () => {
     }
   };
 
+  // "Fill in from a link": only empty fields are filled, nothing typed is overwritten.
+  const prefillFromLink = async (url: string) => {
+    let preview: LinkPreview;
+    try {
+      preview = await fetchLinkPreview(url);
+    } catch (e) {
+      toast.error(prefillErrorMessage(e));
+      return;
+    }
+    if (!preview.title && !preview.description && !preview.image) {
+      toast.error(
+        "Pagina nu are informații de previzualizare (de ex. un eveniment Facebook privat sau care cere login). Completează manual.",
+      );
+      return;
+    }
+    const current = form.getValues();
+    const filled: string[] = [];
+    const set = (name: Parameters<typeof setValue>[0], value: string) =>
+      setValue(name, value as never, { shouldDirty: true, shouldValidate: formState.isSubmitted });
+
+    if (preview.title && !current.title.ro.trim()) {
+      set("title.ro", preview.title);
+      filled.push("titlul");
+    }
+    if (preview.description) {
+      const short = shortSummary(preview.description);
+      if (!current.summary.ro.trim()) {
+        set("summary.ro", short);
+        filled.push("descrierea scurtă");
+      }
+      if (short !== preview.description && !current.content.ro.trim()) {
+        set("content.ro", preview.description);
+        filled.push("descrierea completă");
+      }
+    }
+    if (!current.external_url.trim()) {
+      set("external_url", preview.url || url);
+      filled.push("linkul extern");
+    }
+    if (preview.image && !current.image_path && session) {
+      setUploading(true);
+      try {
+        const blob = await resizeImage(await fetchLinkImage(preview.image));
+        const base = form.getValues("slug") || slugify(form.getValues("title.ro"));
+        setValue("image_path", await uploadEventImage(blob, session.user.id, base), { shouldDirty: true });
+        filled.push("poza");
+      } catch {
+        toast.error("Poza de pe pagină nu a putut fi preluată; poți alege una manual.");
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    if (filled.length) {
+      setLanguage("ro");
+      toast.success(`Am completat: ${filled.join(", ")}. Verifică textele, apoi alege tipul, data și ora.`);
+    } else {
+      toast("Câmpurile erau deja completate; nu am schimbat nimic.");
+    }
+  };
+
   const onSubmit = handleSubmit(
     async (formValues) => {
       try {
@@ -297,6 +386,8 @@ const EventFormPage = () => {
           {isNew ? "Eveniment nou" : "Editează evenimentul"}
         </h1>
       </div>
+
+      <LinkPrefill onPrefill={prefillFromLink} />
 
       {/* Texts, one tab per language */}
       <section className="space-y-4">

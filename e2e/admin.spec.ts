@@ -409,3 +409,50 @@ test("the end can never be set before the start", async ({ page }) => {
   // still not before the start (19:00)
   expect(Number(await endHour.inputValue())).toBeGreaterThanOrEqual(19);
 });
+
+test("a new event can be pre-filled from a link (title, description, photo, link)", async ({ page }, testInfo) => {
+  const db = await mockSupabase(page, "ok", { role: "editor" });
+  await login(page);
+  await page.getByRole("link", { name: "Adaugă eveniment" }).click();
+
+  await page.getByLabel("Completează din link (opțional)").fill("https://www.facebook.com/events/42");
+  await page.getByLabel("Completează din link (opțional)").press("Enter"); // does not submit the form
+  await expect(page.getByText(/^Am completat: titlul, descrierea scurtă, descrierea completă, linkul extern, poza/)).toBeVisible();
+
+  await expect(page.getByLabel("Titlu (Română) *")).toHaveValue("Milonga la castel");
+  await expect(page.getByLabel("Adresa în site *")).toHaveValue("milonga-la-castel");
+  const summary = await page.getByLabel("Descriere scurtă (Română)").inputValue();
+  expect(summary.length).toBeLessThanOrEqual(300);
+  expect(summary.startsWith("O seară de tango în curtea castelului.")).toBe(true);
+  await expect(page.getByLabel("Descriere completă (Română)")).toHaveValue(/Muzică live, dans și prieteni/);
+  await expect(page.getByLabel("Link extern")).toHaveValue("https://www.facebook.com/events/42");
+  expect(db.uploads).toHaveLength(1);
+  expect(db.uploads[0]).toMatch(/milonga-la-castel-\d+\.(webp|jpg)$/);
+  await expect(page.getByRole("button", { name: "Fără poză" })).toBeVisible();
+
+  if (testInfo.project.name === "phone-portrait") {
+    await page.screenshot({ path: "e2e/screenshots/admin-prefill-phone-portrait.png" });
+  }
+});
+
+test("pre-filling never overwrites what was already typed", async ({ page }) => {
+  const db = await mockSupabase(page, "ok", { role: "editor" });
+  await login(page);
+  await page.getByRole("link", { name: "Adaugă eveniment" }).click();
+  await page.getByLabel("Titlu (Română) *").fill("Titlul meu");
+  await page.getByLabel("Completează din link (opțional)").fill("https://www.facebook.com/events/42");
+  await page.getByRole("button", { name: "Preia datele" }).click();
+  await expect(page.getByText(/^Am completat: descrierea scurtă/)).toBeVisible();
+  await expect(page.getByLabel("Titlu (Română) *")).toHaveValue("Titlul meu");
+  expect(db.uploads).toHaveLength(1);
+});
+
+test("a page without preview tags is explained", async ({ page }) => {
+  await mockSupabase(page, "ok", { role: "editor" });
+  await login(page);
+  await page.getByRole("link", { name: "Adaugă eveniment" }).click();
+  await page.getByLabel("Completează din link (opțional)").fill("https://example.ro/fara-meta");
+  await page.getByRole("button", { name: "Preia datele" }).click();
+  await expect(page.getByText(/Pagina nu are informații de previzualizare/)).toBeVisible();
+  await expect(page.getByLabel("Titlu (Română) *")).toHaveValue("");
+});
