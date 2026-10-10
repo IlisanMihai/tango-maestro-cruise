@@ -64,5 +64,7 @@
   "event.ended": "Acest eveniment s-a încheiat.",
   "event.moreInfo": "Mai multe informații",
   "event.addToCalendar": "Adaugă în Google Calendar",
-  "event.notFound": "Evenimentul nu a fost găsit."
+  "event.notFound": "Evenimentul nu a fost găsit.",
+  "event.addedBy": "Adăugat de {{name}}",
+  "event.addedByLabel": "Cine a adăugat"
 }

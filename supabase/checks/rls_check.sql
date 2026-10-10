@@ -48,6 +48,17 @@ begin
     raise exception 'FAIL: anon inserted an event';
   exception when insufficient_privilege then null;
   end;
+  if public.event_author_name((select id from public.events where slug = 'rls-ed2-published')) is distinct from 'Editor 2' then
+    raise exception 'FAIL: anon cannot see the author of a published event';
+  end if;
+  if public.event_author_name((select e.id from public.events e where e.slug = 'rls-ed2-draft' limit 1)) is not null then
+    raise exception 'FAIL: author name of a draft is visible';
+  end if;
+  begin
+    perform public.set_my_name('hacker');
+    raise exception 'FAIL: anon called set_my_name';
+  exception when insufficient_privilege then null;
+  end;
   begin
     if exists (select 1 from public.profiles) then
       raise exception 'FAIL: anon can read profiles';
@@ -118,6 +129,15 @@ begin
   get diagnostics n = row_count;
   if n <> 0 then raise exception 'FAIL: editor changed own role'; end if;
 
+  -- own name: allowed; it changes nothing else and nobody else's name
+  perform public.set_my_name('  Editor Unu  ');
+  if (select name from public.profiles where id = '00000000-0000-4000-a000-0000000000e1') <> 'Editor Unu' then
+    raise exception 'FAIL: editor cannot set own name';
+  end if;
+  if (select role from public.profiles where id = '00000000-0000-4000-a000-0000000000e1') <> 'editor' then
+    raise exception 'FAIL: set_my_name changed the role';
+  end if;
+
   -- storage: cannot upload into someone else's folder
   begin
     insert into storage.objects (bucket_id, name)
@@ -164,6 +184,18 @@ begin
   update public.profiles set active = false where id = '00000000-0000-4000-a000-0000000000e2';
   get diagnostics n = row_count;
   if n <> 1 then raise exception 'FAIL: admin cannot update profiles'; end if;
+
+  -- the only active admin cannot demote or deactivate themself
+  begin
+    update public.profiles set active = false where id = '00000000-0000-4000-a000-00000000000a';
+    raise exception 'FAIL: the last admin deactivated themself';
+  exception when check_violation then null;
+  end;
+  begin
+    update public.profiles set role = 'editor' where id = '00000000-0000-4000-a000-00000000000a';
+    raise exception 'FAIL: the last admin demoted themself';
+  exception when check_violation then null;
+  end;
   raise notice 'All RLS checks passed.';
 end $$;
 

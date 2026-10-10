@@ -11,7 +11,11 @@ interface AuthState {
   signInWithPassword: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  /** Re-reads the profile, so a role change or deactivation by an admin applies right away. */
+  refreshProfile: () => Promise<void>;
 }
+
+const PROFILE_RECHECK_MS = 60_000;
 
 const AuthContext = createContext<AuthState | null>(null);
 
@@ -68,6 +72,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => data.subscription.unsubscribe();
   }, [loadProfile]);
 
+  const refreshProfile = useCallback(async () => {
+    const userId = profileUserId.current;
+    if (!userId) return;
+    try {
+      const fresh = await fetchProfile(userId);
+      if (profileUserId.current !== userId) return; // signed out meanwhile
+      setProfile((current) =>
+        current && fresh && current.active === fresh.active && current.role === fresh.role && current.name === fresh.name
+          ? current
+          : fresh,
+      );
+    } catch {
+      // offline or temporary error: keep what we have; the database still enforces access
+    }
+  }, []);
+
+  // Re-check every minute and whenever the tab becomes visible again.
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refreshProfile();
+    };
+    const timer = window.setInterval(refreshProfile, PROFILE_RECHECK_MS);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [refreshProfile]);
+
   const signInWithPassword = async (email: string, password: string) => {
     if (!supabase) throw new Error("Supabase nu este configurat.");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -91,7 +124,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, signInWithPassword, signInWithGoogle, signOut }}>
+    <AuthContext.Provider
+      value={{ session, profile, loading, signInWithPassword, signInWithGoogle, signOut, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -17,7 +17,7 @@ import type { EventRow } from "@/lib/supabase";
 import { formatEventDates, hasEnded } from "@/lib/events";
 import { notifyEventsChanged } from "@/lib/eventsSync";
 import { useAuth } from "../auth";
-import { deleteEvent, fetchAdminEvents } from "../lib/api";
+import { deleteEvent, fetchAdminEvents, type AdminEventRow } from "../lib/api";
 import { EVENT_TYPE_LABELS } from "../lib/labels";
 
 const normalize = (text: string) =>
@@ -25,6 +25,12 @@ const normalize = (text: string) =>
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase();
+
+/** Admins see who added each event. */
+const Author = ({ event }: { event: AdminEventRow }) => {
+  const who = event.author?.name || event.author?.email;
+  return who ? <span className="block font-body text-xs text-muted-foreground">adăugat de {who}</span> : null;
+};
 
 const StatusBadge = ({ event }: { event: EventRow }) => (
   <span className="flex flex-wrap gap-1.5">
@@ -161,7 +167,10 @@ const EventsListPage = () => {
         {events.map((event) => (
           <li key={event.id} className="rounded-sm border border-gold/15 bg-secondary/40 p-4">
             <div className="mb-1 flex items-start justify-between gap-3">
-              <h2 className="font-display text-lg leading-snug text-parchment">{event.title.ro}</h2>
+              <div>
+                <h2 className="font-display text-lg leading-snug text-parchment">{event.title.ro}</h2>
+                <Author event={event} />
+              </div>
               <span className="shrink-0 font-body text-xs uppercase tracking-[0.15em] text-gold">
                 {EVENT_TYPE_LABELS[event.type]}
               </span>
@@ -198,6 +207,7 @@ const EventsListPage = () => {
                   <td className="py-3 pr-4">
                     <span className="font-display text-base text-parchment">{event.title.ro}</span>
                     <span className="block text-xs text-muted-foreground">/{event.slug}</span>
+                    <Author event={event} />
                   </td>
                   <td className="py-3 pr-4 text-foreground/80">{EVENT_TYPE_LABELS[event.type]}</td>
                   <td className="py-3 pr-4 text-foreground/80 first-letter:uppercase">

@@ -64,5 +64,7 @@
   "event.ended": "Este evento ya terminó.",
   "event.moreInfo": "Más información",
   "event.addToCalendar": "Añadir a Google Calendar",
-  "event.notFound": "Evento no encontrado."
+  "event.notFound": "Evento no encontrado.",
+  "event.addedBy": "Publicado por {{name}}",
+  "event.addedByLabel": "Publicado por"
 }

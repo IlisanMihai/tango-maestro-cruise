@@ -1,8 +1,22 @@
 import type { ReactNode } from "react";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link, NavLink, Navigate, useLocation } from "react-router-dom";
 import { ExternalLink, Loader2, LogOut } from "lucide-react";
 import { useAuth } from "./auth";
 import { useAdminHead } from "./useAdminHead";
+
+const AdminNavLink = ({ to, end, children }: { to: string; end?: boolean; children: ReactNode }) => (
+  <NavLink
+    to={to}
+    end={end}
+    className={({ isActive }) =>
+      `border-b-2 pb-2 font-body text-sm transition-colors ${
+        isActive ? "border-primary text-parchment" : "border-transparent text-muted-foreground hover:text-foreground"
+      }`
+    }
+  >
+    {children}
+  </NavLink>
+);
 
 export const FullPageSpinner = () => (
   <div className="flex min-h-screen items-center justify-center" aria-busy="true">
@@ -47,6 +61,13 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
             </button>
           </div>
         </div>
+        <nav aria-label="Secțiuni" className="mx-auto flex max-w-5xl gap-5 px-4 sm:px-6">
+          <AdminNavLink to="/admin" end>
+            Evenimente
+          </AdminNavLink>
+          {profile?.role === "admin" && <AdminNavLink to="/admin/users">Utilizatori</AdminNavLink>}
+          <AdminNavLink to="/admin/account">Contul meu</AdminNavLink>
+        </nav>
       </header>
       <main className="mx-auto max-w-5xl px-4 pb-24 pt-6 sm:px-6 md:pt-10">{children}</main>
     </div>

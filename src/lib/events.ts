@@ -85,6 +85,14 @@ export async function fetchPastEvents({
   return { events: rows.slice(0, PAST_PAGE_SIZE), hasMore: rows.length > PAST_PAGE_SIZE };
 }
 
+/** Display name of whoever added a published event (never the email); null if unknown. */
+export async function fetchEventAuthorName(eventId: string): Promise<string | null> {
+  const supabase = await client();
+  const { data, error } = await supabase.rpc("event_author_name", { event_id: eventId });
+  if (error) throw error;
+  return typeof data === "string" && data.trim() ? data.trim() : null;
+}
+
 /** A published event by slug, or null when it does not exist (or is a draft). */
 export async function fetchEventBySlug(slug: string): Promise<EventRow | null> {
   const supabase = await client();

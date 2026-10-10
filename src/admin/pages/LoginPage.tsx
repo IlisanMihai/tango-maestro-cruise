@@ -5,6 +5,7 @@ import { useAuth } from "../auth";
 import { FullPageSpinner } from "../AdminLayout";
 import { useAdminHead } from "../useAdminHead";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
+import { sendPasswordReset } from "../lib/api";
 
 // Google login appears only once it is set up in Supabase (VITE_GOOGLE_LOGIN=true).
 const GOOGLE_LOGIN = import.meta.env.VITE_GOOGLE_LOGIN === "true";
@@ -35,6 +36,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState<"password" | "google" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [resetState, setResetState] = useState<"idle" | "sending" | "sent">("idle");
 
   if (loading) return <FullPageSpinner />;
   if (session && profile?.active) {
@@ -144,6 +146,36 @@ const LoginPage = () => {
             Intră în cont
           </button>
         </form>
+
+        <div className="mt-4 text-center">
+          {resetState === "sent" ? (
+            <p role="status" className="font-body text-sm text-muted-foreground">
+              Dacă adresa are cont, vei primi în câteva minute un email cu un link pentru o parolă nouă.
+            </p>
+          ) : (
+            <button
+              type="button"
+              disabled={resetState === "sending"}
+              onClick={async () => {
+                setError(null);
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+                  setError("Scrie mai întâi adresa de email, apoi apasă „Am uitat parola”.");
+                  return;
+                }
+                setResetState("sending");
+                try {
+                  await sendPasswordReset(email.trim());
+                } catch {
+                  // Same answer either way: do not reveal which emails have accounts.
+                }
+                setResetState("sent");
+              }}
+              className="font-body text-sm text-gold underline-offset-4 hover:underline disabled:opacity-60"
+            >
+              Am uitat parola
+            </button>
+          )}
+        </div>
 
         <p className="mt-8 font-body text-xs text-muted-foreground">
           Conturile se creează doar prin invitație de la un administrator.

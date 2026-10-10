@@ -22,6 +22,9 @@ const StaffArea = lazy(() => import("./admin/StaffArea.tsx"));
 const AdminLogin = lazy(() => import("./admin/pages/LoginPage.tsx"));
 const AdminEvents = lazy(() => import("./admin/pages/EventsListPage.tsx"));
 const AdminEventForm = lazy(() => import("./admin/pages/EventFormPage.tsx"));
+const AdminUsers = lazy(() => import("./admin/pages/UsersPage.tsx"));
+const AdminSetPassword = lazy(() => import("./admin/pages/SetPasswordPage.tsx"));
+const AdminAccount = lazy(() => import("./admin/pages/AccountPage.tsx"));
 
 // Events are always re-read when a page opens or the tab gets focus again,
 // so changes made in the admin show up right away.
@@ -60,10 +63,14 @@ const App = () => (
             }
           >
             <Route path="login" element={<AdminLogin />} />
+            {/* Opened from invitation / password-reset emails: signs in from the link itself. */}
+            <Route path="set-password" element={<AdminSetPassword />} />
             <Route element={<StaffArea />}>
               <Route index element={<AdminEvents />} />
               <Route path="events/new" element={<AdminEventForm key="new" />} />
               <Route path="events/:id" element={<AdminEventForm key="edit" />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="account" element={<AdminAccount />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Route>
