@@ -136,3 +136,25 @@ Din **Project Settings → API** (sau **API Keys**) ia **Project URL** și cheia
 - Vechea adresă `/event` e redirecționată permanent (301) spre `/events` din `public/_redirects`.
 - `netlify/edge-functions/event-meta/` pune titlul, descrierea și poza evenimentului în HTML-ul paginii `/events/<slug>`, ca Facebook/WhatsApp să afișeze o previzualizare corectă (ei nu rulează JavaScript). Folosește aceleași variabile `VITE_SUPABASE_URL` și `VITE_SUPABASE_ANON_KEY`: în Netlify, la fiecare variabilă, lasă **Scopes** pe „All scopes” (sau bifează și **Functions**). Dacă lipsesc, pagina merge normal, doar fără previzualizare personalizată.
 - Verificare după deploy: lipește linkul unui eveniment în [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/).
+
+### 7. Administrare evenimente (etapa 4)
+
+- `/admin/login`: login cu email + parolă sau cu Google. Conturile se creează doar din Supabase (Authentication → Users → Add user), apoi se activează în `profiles` (`active = true`).
+- `/admin`: lista evenimentelor (adminul le vede pe toate, editorul doar pe ale lui), căutare, ștergere (doar admin).
+- `/admin/events/new` și `/admin/events/<id>`: formular cu un tab pe limbă (româna obligatorie), poză micșorată automat (max. 1600 px, WebP) încărcată în `event-images/<uid>/`, ciornă / publicat, previzualizare.
+- Data și ora se aleg dintr-un calendar în română plus liste pentru oră și minute (din 5 în 5), mereu în ora României.
+- Locația se poate alege pe hartă (OpenStreetMap + căutare Nominatim, gratuite, fără cont sau cheie): punctul ales se salvează în `latitude` / `longitude` (migrarea `20261010010000_event_coordinates.sql`), iar pe site linkul de locație deschide Google Maps exact acolo.
+- Zona de admin e doar în română, nu e indexată de Google (`noindex` + `robots.txt`) și se încarcă separat de site.
+
+**Setări în Supabase → Authentication → URL Configuration:**
+- **Site URL**: `https://oradeatango.ro`
+- **Redirect URLs**: `https://oradeatango.ro/admin`, `http://localhost:8080/admin` (și, pentru telefon, `http://192.168.100.101:8080/admin`)
+
+**Login cu Google (opțional):**
+1. [Google Cloud Console](https://console.cloud.google.com/) → proiect nou → *APIs & Services* → *OAuth consent screen*: tip **External**, numele aplicației „Tango Oradea”, emailul tău; publică aplicația (*Publish app*).
+2. *Credentials* → *Create credentials* → *OAuth client ID* → tip **Web application**.
+   - *Authorized JavaScript origins*: `https://oradeatango.ro`, `http://localhost:8080`
+   - *Authorized redirect URIs*: adresa de callback afișată de Supabase la pasul 3 (de forma `https://<project-id>.supabase.co/auth/v1/callback`)
+3. Supabase → Authentication → Sign In / Providers → **Google** → Enable, lipești *Client ID* și *Client Secret* → Save.
+4. Te poți loga cu Google doar cu un email care are deja cont (înregistrarea publică e oprită).
+5. Butonul „Continuă cu Google” apare doar cu `VITE_GOOGLE_LOGIN=true`, în `.env.local` și în Netlify (apoi redeploy).

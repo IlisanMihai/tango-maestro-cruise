@@ -16,7 +16,6 @@ const UpcomingEventsSection = () => {
     queryKey: ["events", "upcoming", UPCOMING_COUNT],
     queryFn: () => fetchUpcomingEvents(UPCOMING_COUNT),
     enabled: isSupabaseConfigured,
-    staleTime: 60_000,
     // supabase-js already retries failed reads (about 7 s in total) before giving up.
     retry: false,
   });

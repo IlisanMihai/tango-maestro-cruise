@@ -13,6 +13,7 @@ import {
   googleCalendarUrl,
   hasEnded,
   localizedText,
+  mapsUrl,
 } from "@/lib/events";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
 import { setPageMetadata } from "@/lib/utils";
@@ -30,7 +31,6 @@ const EventDetailPage = () => {
     queryKey: ["event", slug],
     queryFn: () => fetchEventBySlug(slug),
     enabled: isSupabaseConfigured && slug !== "",
-    staleTime: 60_000,
     retry: false,
   });
   const event = query.data;
@@ -131,7 +131,7 @@ const EventDetailPage = () => {
                       </dt>
                       <dd className="text-foreground/90">
                         <a
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
+                          href={mapsUrl(event)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="underline decoration-gold/40 underline-offset-4 hover:text-gold"

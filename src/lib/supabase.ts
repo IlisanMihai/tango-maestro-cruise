@@ -32,6 +32,9 @@ export type EventRow = {
   summary: I18nText | null;
   content: I18nText | null;
   location: string | null;
+  /** Optional map point picked in the admin (both set or both null). */
+  latitude: number | null;
+  longitude: number | null;
   image_path: string | null;
   external_url: string | null;
   status: "draft" | "published";
