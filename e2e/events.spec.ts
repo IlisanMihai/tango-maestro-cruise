@@ -346,3 +346,17 @@ test("on wider screens a card shows photo, title, date/type line, then the summa
   expect(type!.x + type!.width).toBeGreaterThan(box!.x + box!.width - 30);
   expect(summary!.y).toBeGreaterThanOrEqual(date!.y + date!.height - 1);
 });
+
+test("the event page shows who added the event, when known", async ({ page }) => {
+  await mockSupabase(page);
+  await page.goto("/events/milonga-de-toamna");
+  await expect(page.getByText("Adăugat de Editor Test")).toBeVisible();
+
+  await page.goto("/en/events/milonga-de-toamna");
+  await expect(page.getByText("Added by Editor Test")).toBeVisible();
+
+  // no author (or no name): nothing is shown
+  await page.goto("/events/practica-de-joi");
+  await expect(page.getByRole("heading", { level: 1, name: "Practică ghidată" })).toBeVisible();
+  await expect(page.getByText(/Adăugat de/)).toHaveCount(0);
+});

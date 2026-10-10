@@ -64,5 +64,7 @@
   "event.ended": "Ez az esemény véget ért.",
   "event.moreInfo": "További információ",
   "event.addToCalendar": "Hozzáadás a Google Naptárhoz",
-  "event.notFound": "Az esemény nem található."
+  "event.notFound": "Az esemény nem található.",
+  "event.addedBy": "Feltöltötte: {{name}}",
+  "event.addedByLabel": "Feltöltő"
 }

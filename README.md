@@ -158,3 +158,30 @@ Din **Project Settings → API** (sau **API Keys**) ia **Project URL** și cheia
 3. Supabase → Authentication → Sign In / Providers → **Google** → Enable, lipești *Client ID* și *Client Secret* → Save.
 4. Te poți loga cu Google doar cu un email care are deja cont (înregistrarea publică e oprită).
 5. Butonul „Continuă cu Google” apare doar cu `VITE_GOOGLE_LOGIN=true`, în `.env.local` și în Netlify (apoi redeploy).
+
+### 8. Utilizatori și invitații (etapa 5)
+
+- `/admin/users` (doar admin): lista conturilor, rol (editor / administrator), activ / inactiv, și „Adaugă o persoană”:
+  - **Invitație pe email**: persoana primește un link și își alege parola (pagina `/admin/set-password`);
+  - **Cont cu parolă**: alegi tu parola și i-o comunici (merge și fără email configurat).
+- Pe login: „Am uitat parola” trimite un link de resetare. În admin: „Parola mea”.
+- Baza de date nu permite să rămână zero administratori activi (migrarea `20261010020000_keep_an_admin.sql`).
+- `netlify/functions/keep-supabase-awake.mjs` face o citire pe zi, ca proiectul Supabase gratuit să nu fie pus pe pauză.
+
+**De făcut o singură dată:**
+
+1. **Migrările**: rulează în SQL Editor `supabase/migrations/20261010020000_keep_an_admin.sql`, apoi `20261010030000_names.sql` (fiecare își poate schimba numele în „Contul meu”; pe site apare „Adăugat de …” la evenimentele publicate, doar numele, niciodată emailul).
+2. **Funcția `invite-user`** (creează conturile; verifică pe server că ești admin):
+   Supabase → **Edge Functions** → *Deploy a new function* → *Via Editor* → numele **`invite-user`** → înlocuiești codul cu conținutul fișierului `supabase/functions/invite-user/index.ts` → *Deploy*.
+   Apoi, în *invite-user → Settings*, **dezactivează „Verify JWT”** (proiectele noi folosesc chei de semnare ES256, pe care această opțiune veche le respinge). Funcția verifică ea însăși că apelantul e administrator activ.
+   (Sau cu CLI: `npx supabase functions deploy invite-user --no-verify-jwt`.)
+3. **Redirect URLs** (Authentication → URL Configuration): adaugă `https://oradeatango.ro/**`, `http://localhost:8080/**` (și `http://192.168.100.101:8080/**`), ca linkurile din emailuri să poată reveni la `/admin/set-password`.
+4. **Emailuri către oricine (pentru invitații / resetare parolă)**: serverul de email inclus în Supabase trimite doar către membrii echipei proiectului și foarte puține mesaje pe oră. Pentru invitații reale:
+   - în contul Google `oradeatango@gmail.com`: *Securitate* → *Verificare în doi pași* (activată) → **Parole pentru aplicații** → creează una („Supabase”);
+   - Supabase → Authentication → **Emails → SMTP Settings** → *Enable custom SMTP*: host `smtp.gmail.com`, port `465`, user `oradeatango@gmail.com`, parola = parola pentru aplicații, sender `oradeatango@gmail.com`, nume „Tango Oradea”.
+   Până atunci, folosește „Cont cu parolă”.
+5. **Textele emailurilor în română** (Authentication → Emails → Templates):
+   - *Invite user* – subiect „Invitație în administrarea Tango Oradea”, conținut:
+     `<p>Bună!</p><p>Ai fost invitat(ă) să adaugi evenimente pe oradeatango.ro.</p><p><a href="{{ .ConfirmationURL }}">Acceptă invitația și alege-ți parola</a></p>`
+   - *Reset password* – subiect „Parolă nouă pentru Tango Oradea”, conținut:
+     `<p>Ai cerut o parolă nouă pentru administrarea oradeatango.ro.</p><p><a href="{{ .ConfirmationURL }}">Alege parola nouă</a></p><p>Dacă nu ai cerut tu, ignoră acest email.</p>`

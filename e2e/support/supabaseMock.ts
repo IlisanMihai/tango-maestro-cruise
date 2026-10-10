@@ -132,6 +132,21 @@ export async function mockSupabase(page: Page | BrowserContext, mode: "ok" | "fa
   const writes: { method: string; body: Record<string, unknown> }[] = [];
   const uploads: string[] = [];
   const userId = auth?.role === "admin" ? ADMIN_ID : EDITOR_ID;
+  const created = "2026-01-01T00:00:00Z";
+  const staff = [
+    { id: userId, email: TEST_EMAIL, name: auth?.role === "admin" ? "Admin Test" : "Editor Test", role: auth?.role ?? "editor", active: auth?.active ?? true, created_at: created },
+    ...(auth?.role === "admin"
+      ? [
+          { id: EDITOR_ID, email: "ana@test.local", name: "Ana Editor", role: "editor", active: true, created_at: created },
+          { id: "cccccccc-0000-4000-a000-000000000003", email: "vechi@test.local", name: null, role: "editor", active: false, created_at: created },
+        ]
+      : []),
+  ];
+  const profileWrites: { id: string; body: Record<string, unknown> }[] = [];
+  const invites: Record<string, unknown>[] = [];
+  const recoveries: string[] = [];
+  const passwordChanges: Record<string, unknown>[] = [];
+  const nameChanges: string[] = [];
 
   await page.route("**/rest/v1/events**", async (route) => {
     if (mode === "fail") return route.abort();
@@ -177,7 +192,22 @@ export async function mockSupabase(page: Page | BrowserContext, mode: "ok" | "fa
     const offset = Number(params.get("offset") ?? 0);
     const limit = params.has("limit") ? Number(params.get("limit")) : rows.length;
     rows = rows.slice(offset, offset + limit);
+    // embedded author (admin list): select=*,author:profiles(name,email)
+    if ((params.get("select") ?? "").includes("author:profiles")) {
+      rows = rows.map((row) => {
+        const p = staff.find((s) => s.id === row.created_by);
+        return { ...row, author: p ? { name: p.name, email: p.email } : null };
+      });
+    }
     return reply(rows);
+  });
+
+  // Public: who added an event (name only, published events only).
+  await page.route("**/rest/v1/rpc/event_author_name", (route) => {
+    const { event_id } = route.request().postDataJSON();
+    const event = events.find((e) => e.id === event_id && e.status === "published");
+    const name = staff.find((p) => p.id === event?.created_by)?.name ?? null;
+    return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(name) });
   });
 
   if (auth) {
@@ -213,19 +243,45 @@ export async function mockSupabase(page: Page | BrowserContext, mode: "ok" | "fa
         body: JSON.stringify({ code: 400, error_code: "invalid_credentials", msg: "Invalid login credentials" }),
       });
     });
-    await page.route("**/auth/v1/user**", (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(fakeSession(userId).user) }),
-    );
+    await page.route("**/auth/v1/user**", (route) => {
+      if (route.request().method() === "PUT") passwordChanges.push(route.request().postDataJSON());
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(fakeSession(userId).user) });
+    });
     await page.route("**/auth/v1/logout**", (route) => route.fulfill({ status: 204 }));
     await page.route("**/rest/v1/profiles**", async (route) => {
       if (auth.profileDelayMs) await new Promise((resolve) => setTimeout(resolve, auth.profileDelayMs));
-      return route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify([
-          { id: userId, email: TEST_EMAIL, name: auth.role === "admin" ? "Admin Test" : "Editor Test", role: auth.role, active: auth.active ?? true },
-        ]),
-      });
+      const request = route.request();
+      const params = new URL(request.url()).searchParams;
+      if (request.method() === "PATCH") {
+        const body = request.postDataJSON();
+        profileWrites.push({ id: params.get("id")?.replace("eq.", "") ?? "", body });
+        const target = staff.find((p) => `eq.${p.id}` === params.get("id"));
+        if (target) Object.assign(target, body);
+        return route.fulfill({ status: 204 });
+      }
+      const rows = params.has("id") ? staff.filter((p) => `eq.${p.id}` === params.get("id")) : staff;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(rows) });
+    });
+    // Recovery email ("forgot password") and the invite-user Edge Function.
+    await page.route("**/rest/v1/rpc/set_my_name", (route) => {
+      const { new_name } = route.request().postDataJSON();
+      nameChanges.push(new_name);
+      staff[0].name = String(new_name).trim() || null;
+      return route.fulfill({ status: 204 });
+    });
+    await page.route("**/auth/v1/recover**", (route) => {
+      recoveries.push(route.request().url());
+      return route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+    });
+    await page.route("**/functions/v1/invite-user", (route) => {
+      const body = route.request().postDataJSON();
+      invites.push(body);
+      const reply = (status: number, payload: object) =>
+        route.fulfill({ status, contentType: "application/json", body: JSON.stringify(payload) });
+      if (String(body.email).startsWith("limit")) return reply(502, { error: "invite_failed", message: "Email rate limit exceeded" });
+      if (String(body.email).startsWith("old")) return reply(200, { status: "existing" });
+      staff.push({ id: `staff-${staff.length}`, email: body.email, name: body.name || null, role: body.role, active: true, created_at: new Date().toISOString() });
+      return reply(200, { status: body.mode === "invite" ? "invited" : "created" });
     });
     // Public URLs of uploaded photos: serve a real image.
     await page.route("**/storage/v1/object/public/event-images/**", (route) =>
@@ -238,5 +294,5 @@ export async function mockSupabase(page: Page | BrowserContext, mode: "ok" | "fa
     });
   }
 
-  return { events, writes, uploads };
+  return { events, writes, uploads, staff, profileWrites, invites, recoveries, passwordChanges, nameChanges };
 }

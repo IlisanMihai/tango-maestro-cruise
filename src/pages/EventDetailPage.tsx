@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, CalendarDays, CalendarPlus, ExternalLink, MapPin } from "lucide-react";
+import { ArrowLeft, CalendarDays, CalendarPlus, ExternalLink, MapPin, UserRound } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import Footer from "@/components/Footer";
 import NotFound from "@/pages/NotFound";
 import {
   eventImageUrl,
+  fetchEventAuthorName,
   fetchEventBySlug,
   formatEventDates,
   googleCalendarUrl,
@@ -34,6 +35,15 @@ const EventDetailPage = () => {
     retry: false,
   });
   const event = query.data;
+
+  // Optional extra: if it fails, the page simply shows no author.
+  const author = useQuery({
+    queryKey: ["event", "author", event?.id],
+    queryFn: () => fetchEventAuthorName(event!.id),
+    enabled: Boolean(event?.id),
+    retry: false,
+  });
+  const authorName = author.data ?? null;
 
   const title = event ? localizedText(event.title, language) : "";
   const summary = event ? localizedText(event.summary, language) : "";
@@ -139,6 +149,15 @@ const EventDetailPage = () => {
                           {event.location}
                         </a>
                       </dd>
+                    </div>
+                  )}
+                  {authorName && (
+                    <div className="flex gap-3">
+                      <dt className="pt-0.5">
+                        <UserRound className="h-5 w-5 text-gold" aria-hidden="true" />
+                        <span className="sr-only">{t("event.addedByLabel")}</span>
+                      </dt>
+                      <dd className="text-foreground/90">{t("event.addedBy", { name: authorName })}</dd>
                     </div>
                   )}
                 </dl>

@@ -33,13 +33,17 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
   return data as Profile | null;
 }
 
-/** Admin: every event. Editor: only their own (drafts included). Newest first. */
-export async function fetchAdminEvents(profile: Profile): Promise<EventRow[]> {
-  let query = db().from("events").select("*");
+export type AdminEventRow = EventRow & { author?: { name: string | null; email: string | null } | null };
+
+/** Admin: every event (with who added it). Editor: only their own (drafts included). Newest first. */
+export async function fetchAdminEvents(profile: Profile): Promise<AdminEventRow[]> {
+  let query = db()
+    .from("events")
+    .select(profile.role === "admin" ? "*, author:profiles(name, email)" : "*");
   if (profile.role !== "admin") query = query.eq("created_by", profile.id);
   const { data, error } = await query.order("start_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []) as EventRow[];
+  return (data ?? []) as unknown as AdminEventRow[];
 }
 
 export async function fetchEventById(id: string): Promise<EventRow | null> {
@@ -75,4 +79,90 @@ export async function uploadEventImage(blob: Blob, userId: string, baseName: str
     .upload(path, blob, { contentType: blob.type, cacheControl: "31536000", upsert: false });
   if (error) throw error;
   return path;
+}
+
+export interface StaffMember extends Profile {
+  created_at: string;
+}
+
+/** Every staff account (RLS lets only admins read other profiles). */
+export async function fetchStaff(): Promise<StaffMember[]> {
+  const { data, error } = await db()
+    .from("profiles")
+    .select("id, email, name, role, active, created_at")
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as StaffMember[];
+}
+
+export class LastAdminError extends Error {
+  constructor() {
+    super("last-admin");
+  }
+}
+
+export async function updateStaff(id: string, changes: Partial<Pick<Profile, "role" | "active" | "name">>) {
+  const { error } = await db().from("profiles").update(changes).eq("id", id);
+  if (error) {
+    // raised by the profiles_keep_an_admin trigger
+    if (error.code === "23514" || /administrator activ/i.test(error.message)) throw new LastAdminError();
+    throw error;
+  }
+}
+
+export type InviteRequest =
+  | { mode: "invite"; email: string; name: string; role: StaffRole }
+  | { mode: "password"; email: string; name: string; role: StaffRole; password: string };
+
+export type InviteResult = "invited" | "created" | "existing";
+
+/** Calls the invite-user Edge Function (it checks on the server that the caller is an admin). */
+export async function inviteStaff(request: InviteRequest): Promise<InviteResult> {
+  const { data, error } = await db().functions.invoke<{ status: InviteResult }>("invite-user", {
+    body: { ...request, redirectTo: `${window.location.origin}/admin/set-password` },
+  });
+  if (error) {
+    // FunctionsHttpError carries the function's JSON answer
+    const response = (error as { context?: Response }).context;
+    let detail: { error?: string; message?: string; msg?: string; code?: string } = {};
+    try {
+      detail = (await response?.json()) ?? {};
+    } catch {
+      // not JSON / no response: function not deployed or network problem
+    }
+    if (detail.error) throw new InviteError(detail.error, detail.message);
+    // An answer from Supabase's gateway, not from our function: with the new
+    // signing keys, the function's "Verify JWT" option rejects valid logins.
+    if (response?.status === 401) throw new InviteError("gateway_jwt", detail.message ?? detail.msg);
+    if (response?.status === 404) throw new InviteError("unreachable", "not found");
+    throw new InviteError("unreachable", detail.message ?? detail.msg);
+  }
+  return data!.status;
+}
+
+export class InviteError extends Error {
+  constructor(
+    public code: string,
+    public detail?: string,
+  ) {
+    super(code);
+  }
+}
+
+export async function sendPasswordReset(email: string) {
+  const { error } = await db().auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/admin/set-password`,
+  });
+  if (error) throw error;
+}
+
+export async function setOwnPassword(password: string) {
+  const { error } = await db().auth.updateUser({ password });
+  if (error) throw error;
+}
+
+/** Changes only the signed-in person's own display name (database function set_my_name). */
+export async function setMyName(name: string) {
+  const { error } = await db().rpc("set_my_name", { new_name: name });
+  if (error) throw error;
 }

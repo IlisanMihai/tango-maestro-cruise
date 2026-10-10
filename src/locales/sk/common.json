@@ -64,5 +64,7 @@
   "event.ended": "Toto podujatie sa už skončilo.",
   "event.moreInfo": "Viac informácií",
   "event.addToCalendar": "Pridať do Kalendára Google",
-  "event.notFound": "Podujatie sa nenašlo."
+  "event.notFound": "Podujatie sa nenašlo.",
+  "event.addedBy": "Pridal(a): {{name}}",
+  "event.addedByLabel": "Pridal(a)"
 }
