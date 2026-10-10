@@ -3,6 +3,7 @@ import { fromBucharestInput, toBucharestInput } from "./datetime";
 import { slugify, SLUG_PATTERN } from "./slug";
 import { emptyEventForm, eventFormSchema, eventFromForm, formFromEvent, type EventFormValues } from "./eventForm";
 import { EVENT_TYPE_OPTIONS } from "./labels";
+import { shortSummary } from "./text";
 import type { EventRow } from "@/lib/supabase";
 
 describe("Romanian time in the form", () => {
@@ -109,4 +110,23 @@ describe("form <-> database row", () => {
 
 it("type options are alphabetical with 'altul' last", () => {
   expect(EVENT_TYPE_OPTIONS).toEqual(["curs", "encuentro", "festival", "maraton", "milonga", "practica", "workshop", "altul"]);
+});
+
+describe("shortSummary", () => {
+  it("keeps short texts and squeezes spaces", () => {
+    expect(shortSummary("  O seară\n\nde tango. ")).toBe("O seară de tango.");
+  });
+
+  it("cuts long texts at a sentence when it can", () => {
+    const text = `${"Prima propoziție destul de lungă pentru card. ".repeat(5)}A doua parte care nu mai încape.`;
+    const short = shortSummary(text, 150);
+    expect(short.length).toBeLessThanOrEqual(150);
+    expect(short.endsWith(".")).toBe(true);
+  });
+
+  it("otherwise cuts at a word and adds an ellipsis", () => {
+    const short = shortSummary("cuvânt ".repeat(80), 100);
+    expect(short.length).toBeLessThanOrEqual(101);
+    expect(short.endsWith("cuvânt…")).toBe(true);
+  });
 });

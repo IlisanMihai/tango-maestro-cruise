@@ -185,3 +185,13 @@ Din **Project Settings → API** (sau **API Keys**) ia **Project URL** și cheia
      `<p>Bună!</p><p>Ai fost invitat(ă) să adaugi evenimente pe oradeatango.ro.</p><p><a href="{{ .ConfirmationURL }}">Acceptă invitația și alege-ți parola</a></p>`
    - *Reset password* – subiect „Parolă nouă pentru Tango Oradea”, conținut:
      `<p>Ai cerut o parolă nouă pentru administrarea oradeatango.ro.</p><p><a href="{{ .ConfirmationURL }}">Alege parola nouă</a></p><p>Dacă nu ai cerut tu, ignoră acest email.</p>`
+
+### 9. Completează din link (fără AI)
+
+În formularul de eveniment, „Completează din link”: lipești adresa paginii evenimentului (Facebook, site de festival...) și se preiau **titlul, descrierea și poza** din etichetele de previzualizare ale paginii (Open Graph), aceleași pe care le vezi când trimiți linkul pe WhatsApp. Se completează doar câmpurile goale; data, ora, tipul și traducerile rămân de completat de mână.
+
+Pagina e citită de funcția `supabase/functions/link-preview` (browserul nu are voie să citească alte site-uri direct). Ea acceptă doar utilizatori activi din admin și doar adrese publice (nu rețele interne).
+
+**Publicare (o singură dată):** Supabase → Edge Functions → *Deploy a new function* → *Via Editor* → numele **`link-preview`** → conținutul fișierului `supabase/functions/link-preview/index.ts` → *Deploy*; apoi în *Settings* **dezactivează „Verify JWT”** (ca la `invite-user`). CLI: `npx supabase functions deploy link-preview --no-verify-jwt`.
+
+Limite: paginile care cer login (evenimente Facebook private) nu au informații publice; atunci completezi manual.

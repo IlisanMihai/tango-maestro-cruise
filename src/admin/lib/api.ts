@@ -166,3 +166,40 @@ export async function setMyName(name: string) {
   const { error } = await db().rpc("set_my_name", { new_name: name });
   if (error) throw error;
 }
+
+export interface LinkPreview {
+  title: string | null;
+  description: string | null;
+  image: string | null;
+  siteName: string | null;
+  url: string;
+}
+
+/** Turns a failed Edge Function call into an InviteError-style code (shared with invite-user). */
+async function functionError(error: unknown): Promise<InviteError> {
+  const response = (error as { context?: Response }).context;
+  let detail: { error?: string; message?: string; msg?: string } = {};
+  try {
+    detail = (await response?.json()) ?? {};
+  } catch {
+    // not JSON / no response
+  }
+  if (detail.error) return new InviteError(detail.error, detail.message);
+  if (response?.status === 401) return new InviteError("gateway_jwt", detail.message ?? detail.msg);
+  return new InviteError("unreachable", detail.message ?? detail.msg);
+}
+
+/** Title, description and image a page publishes for link previews (link-preview Edge Function). */
+export async function fetchLinkPreview(url: string): Promise<LinkPreview> {
+  const { data, error } = await db().functions.invoke<LinkPreview>("link-preview", { body: { mode: "meta", url } });
+  if (error) throw await functionError(error);
+  return data!;
+}
+
+/** Downloads a preview image through the link-preview function (browsers may not fetch other sites). */
+export async function fetchLinkImage(url: string): Promise<Blob> {
+  const { data, error } = await db().functions.invoke<Blob>("link-preview", { body: { mode: "image", url } });
+  if (error) throw await functionError(error);
+  if (!(data instanceof Blob) || data.size === 0) throw new InviteError("no_image");
+  return data;
+}
