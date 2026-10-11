@@ -15,32 +15,33 @@ const texts = z.object({ ro: z.string(), en: z.string(), hu: z.string(), es: z.s
 const romanianIfAny = (value: TextByLanguage) =>
   value.ro.trim() !== "" || LANGUAGES.every((lng) => value[lng].trim() === "");
 
+/** Messages are keys of the "admin" translations (errors.*), translated where shown. */
 export const eventFormSchema = z
   .object({
     type: z.enum(EVENT_TYPES as [EventType, ...EventType[]], {
-      errorMap: () => ({ message: "Alege tipul evenimentului." }),
+      errorMap: () => ({ message: "errors.typeRequired" }),
     }),
-    start: z.string().min(1, "Alege data și ora de început."),
-    end: z.string().min(1, "Alege data și ora de sfârșit."),
+    start: z.string().min(1, "errors.startRequired"),
+    end: z.string().min(1, "errors.endRequired"),
     slug: z
       .string()
-      .min(1, "Adresa (slug) este obligatorie.")
-      .regex(SLUG_PATTERN, "Doar litere mici fără diacritice, cifre și cratime (ex. milonga-de-toamna)."),
+      .min(1, "errors.slugRequired")
+      .regex(SLUG_PATTERN, "errors.slugFormat"),
     status: z.enum(["draft", "published"]),
     location: z.string(),
     external_url: z
       .string()
       .trim()
-      .refine((v) => v === "" || /^https?:\/\/\S+$/i.test(v), "Linkul trebuie să înceapă cu https://"),
+      .refine((v) => v === "" || /^https?:\/\/\S+$/i.test(v), "errors.urlFormat"),
     image_path: z.string().nullable(),
     latitude: z.number().min(-90).max(90).nullable(),
     longitude: z.number().min(-180).max(180).nullable(),
-    title: texts.refine((v) => v.ro.trim() !== "", { message: "Titlul în română este obligatoriu.", path: ["ro"] }),
-    summary: texts.refine(romanianIfAny, { message: "Completează și descrierea scurtă în română.", path: ["ro"] }),
-    content: texts.refine(romanianIfAny, { message: "Completează și descrierea completă în română.", path: ["ro"] }),
+    title: texts.refine((v) => v.ro.trim() !== "", { message: "errors.titleRequired", path: ["ro"] }),
+    summary: texts.refine(romanianIfAny, { message: "errors.summaryNeedsRo", path: ["ro"] }),
+    content: texts.refine(romanianIfAny, { message: "errors.contentNeedsRo", path: ["ro"] }),
   })
   .refine((v) => !v.start || !v.end || v.end >= v.start, {
-    message: "Sfârșitul nu poate fi înainte de început.",
+    message: "errors.endBeforeStart",
     path: ["end"],
   });
 

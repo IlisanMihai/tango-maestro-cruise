@@ -6,6 +6,9 @@ import { FullPageSpinner } from "../AdminLayout";
 import { useAdminHead } from "../useAdminHead";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
 import { sendPasswordReset } from "../lib/api";
+import { useAdminT } from "../i18n";
+import AdminLanguageSwitch from "../components/AdminLanguageSwitch";
+import type { TFunction } from "i18next";
 
 // Google login appears only once it is set up in Supabase (VITE_GOOGLE_LOGIN=true).
 const GOOGLE_LOGIN = import.meta.env.VITE_GOOGLE_LOGIN === "true";
@@ -13,13 +16,12 @@ const GOOGLE_LOGIN = import.meta.env.VITE_GOOGLE_LOGIN === "true";
 const inputClass =
   "w-full rounded-sm border border-gold/20 bg-secondary/50 px-4 py-3 font-body text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none";
 
-function friendlyError(message: string): string {
-  if (/invalid login credentials/i.test(message)) return "Email sau parolă greșită.";
-  if (/email not confirmed/i.test(message)) return "Adresa de email nu a fost confirmată încă.";
-  if (/provider is not enabled|unsupported provider/i.test(message)) return "Login-ul cu Google nu este încă activat.";
-  if (/signups not allowed|user not found/i.test(message))
-    return "Acest cont nu are acces. Conturile se creează doar prin invitație.";
-  return "Nu te-am putut autentifica. Încearcă din nou.";
+function friendlyError(message: string, t: TFunction<"admin">): string {
+  if (/invalid login credentials/i.test(message)) return t("login.errors.credentials");
+  if (/email not confirmed/i.test(message)) return t("login.errors.notConfirmed");
+  if (/provider is not enabled|unsupported provider/i.test(message)) return t("login.errors.google");
+  if (/signups not allowed|user not found/i.test(message)) return t("login.errors.noAccess");
+  return t("login.errors.generic");
 }
 
 const GoogleIcon = () => (
@@ -30,6 +32,7 @@ const GoogleIcon = () => (
 
 const LoginPage = () => {
   useAdminHead();
+  const { t } = useAdminT();
   const { session, profile, loading, signInWithPassword, signInWithGoogle } = useAuth();
   const location = useLocation();
   const [email, setEmail] = useState("");
@@ -52,7 +55,7 @@ const LoginPage = () => {
     try {
       await signInWithPassword(email.trim(), password);
     } catch (e) {
-      setError(friendlyError((e as Error).message));
+      setError(friendlyError((e as Error).message, t));
     } finally {
       setBusy(null);
     }
@@ -64,22 +67,23 @@ const LoginPage = () => {
     try {
       await signInWithGoogle(); // leaves the page on success
     } catch (e) {
-      setError(friendlyError((e as Error).message));
+      setError(friendlyError((e as Error).message, t));
       setBusy(null);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10">
+    <div className="relative flex min-h-screen items-center justify-center px-4 py-10">
+      <div className="absolute right-4 top-4">
+        <AdminLanguageSwitch />
+      </div>
       <div className="w-full max-w-sm">
-        <h1 className="mb-2 font-display text-4xl text-parchment">Administrare</h1>
-        <p className="mb-8 font-body text-sm text-muted-foreground">
-          Intră în cont ca să adaugi și să modifici evenimente.
-        </p>
+        <h1 className="mb-2 font-display text-4xl text-parchment">{t("app.title")}</h1>
+        <p className="mb-8 font-body text-sm text-muted-foreground">{t("login.subtitle")}</p>
 
         {!isSupabaseConfigured && (
           <p role="alert" className="mb-6 rounded-sm border border-destructive/50 p-3 font-body text-sm text-destructive">
-            Lipsesc VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY.
+            {t("login.missingEnv")}
           </p>
         )}
 
@@ -92,12 +96,12 @@ const LoginPage = () => {
               className="flex w-full items-center justify-center gap-3 rounded-sm bg-parchment px-4 py-3 font-body text-base font-medium text-background hover:brightness-95 disabled:opacity-60"
             >
               {busy === "google" ? <Loader2 className="h-5 w-5 animate-spin" /> : <GoogleIcon />}
-              Continuă cu Google
+              {t("login.google")}
             </button>
 
             <div className="my-6 flex items-center gap-3 font-body text-xs uppercase tracking-[0.2em] text-muted-foreground">
               <span className="h-px flex-1 bg-gold/20" />
-              sau
+              {t("login.or")}
               <span className="h-px flex-1 bg-gold/20" />
             </div>
           </>
@@ -106,7 +110,7 @@ const LoginPage = () => {
         <form onSubmit={submit} className="space-y-4">
           <div>
             <label htmlFor="email" className="mb-1 block font-body text-sm text-foreground/80">
-              Email
+              {t("login.email")}
             </label>
             <input
               id="email"
@@ -120,7 +124,7 @@ const LoginPage = () => {
           </div>
           <div>
             <label htmlFor="password" className="mb-1 block font-body text-sm text-foreground/80">
-              Parolă
+              {t("login.password")}
             </label>
             <input
               id="password"
@@ -143,14 +147,14 @@ const LoginPage = () => {
             className="flex w-full items-center justify-center gap-2 rounded-sm bg-primary px-4 py-3 font-body text-base font-medium text-primary-foreground hover:brightness-125 disabled:opacity-60"
           >
             {busy === "password" && <Loader2 className="h-5 w-5 animate-spin" />}
-            Intră în cont
+            {t("login.submit")}
           </button>
         </form>
 
         <div className="mt-4 text-center">
           {resetState === "sent" ? (
             <p role="status" className="font-body text-sm text-muted-foreground">
-              Dacă adresa are cont, vei primi în câteva minute un email cu un link pentru o parolă nouă.
+              {t("login.resetSent")}
             </p>
           ) : (
             <button
@@ -159,7 +163,7 @@ const LoginPage = () => {
               onClick={async () => {
                 setError(null);
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-                  setError("Scrie mai întâi adresa de email, apoi apasă „Am uitat parola”.");
+                  setError(t("login.resetNeedsEmail"));
                   return;
                 }
                 setResetState("sending");
@@ -172,13 +176,13 @@ const LoginPage = () => {
               }}
               className="font-body text-sm text-gold underline-offset-4 hover:underline disabled:opacity-60"
             >
-              Am uitat parola
+              {t("login.forgot")}
             </button>
           )}
         </div>
 
         <p className="mt-8 font-body text-xs text-muted-foreground">
-          Conturile se creează doar prin invitație de la un administrator.
+          {t("login.inviteOnly")}
         </p>
       </div>
     </div>

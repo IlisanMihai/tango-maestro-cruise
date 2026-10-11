@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useReducer, useState } from "react";
 import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NotFound from "@/pages/NotFound";
-import { preferredLanguage } from "./index";
+import { preferredLanguage, storedLanguage } from "./index";
 import {
   DEFAULT_LANGUAGE,
   LANGUAGES,
@@ -80,6 +80,18 @@ const LanguageLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // A language picked with the flags wins over the one in the address, e.g. when
+  // going "Back" to a page first seen in another language: show it in the chosen one.
+  const stored = storedLanguage();
+  const followTarget =
+    !redirecting && validPrefix && lng !== DEFAULT_LANGUAGE && stored && stored !== language
+      ? localizePath(path, stored) + location.search + location.hash
+      : null;
+  useEffect(() => {
+    if (followTarget) navigate(followTarget, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [followTarget]);
+
   // Switch i18next before the page renders: components mounted in the same
   // commit as a language change would otherwise keep the old texts.
   // (Resources are bundled, so changeLanguage applies synchronously.)
@@ -99,7 +111,7 @@ const LanguageLayout = () => {
     const rest = location.pathname.replace(/^\/ro(?=\/|$)/, "") || "/";
     return <Navigate to={rest + location.search + location.hash} replace />;
   }
-  if (redirecting || !languageReady) return null;
+  if (redirecting || followTarget || !languageReady) return null;
   if (!validPrefix) return <NotFound />;
   return <Outlet />;
 };

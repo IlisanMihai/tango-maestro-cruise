@@ -4,12 +4,14 @@ import { toast } from "sonner";
 import { KeyRound, Loader2 } from "lucide-react";
 import { useAuth } from "../auth";
 import { setMyName } from "../lib/api";
+import { useAdminT } from "../i18n";
 
 const inputClass =
   "w-full rounded-sm border border-gold/20 bg-secondary/50 px-3 py-2.5 font-body text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none";
 
 /** "My account": everyone can change their own name and password. */
 const AccountPage = () => {
+  const { t } = useAdminT();
   const { profile, session, refreshProfile } = useAuth();
   const [name, setName] = useState(profile?.name ?? "");
   const [busy, setBusy] = useState(false);
@@ -22,9 +24,9 @@ const AccountPage = () => {
     try {
       await setMyName(name.trim());
       await refreshProfile();
-      toast.success("Numele a fost salvat.");
+      toast.success(t("account.nameSaved"));
     } catch {
-      toast.error("Numele nu a putut fi salvat. Încearcă din nou.");
+      toast.error(t("account.nameFailed"));
     } finally {
       setBusy(false);
     }
@@ -33,26 +35,26 @@ const AccountPage = () => {
   return (
     <div className="max-w-xl space-y-8">
       <div>
-        <h1 className="font-display text-3xl text-parchment md:text-4xl">Contul meu</h1>
+        <h1 className="font-display text-3xl text-parchment md:text-4xl">{t("account.title")}</h1>
         <p className="font-body text-sm text-muted-foreground">
-          {session?.user.email} · {profile?.role === "admin" ? "Administrator" : "Editor"}
+          {session?.user.email} · {profile?.role === "admin" ? t("users.roleAdmin") : t("users.roleEditor")}
         </p>
       </div>
 
       <form onSubmit={submit} className="space-y-3" noValidate>
         <label htmlFor="my-name" className="block font-body text-sm text-foreground/80">
-          Numele tău
+          {t("account.yourName")}
         </label>
         <input
           id="my-name"
           value={name}
           maxLength={100}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Ex.: Ana Popescu"
+          placeholder={t("account.namePlaceholder")}
           className={inputClass}
         />
         <p className="font-body text-xs text-muted-foreground">
-          Apare pe site, la evenimentele adăugate de tine („Adăugat de …”). Dacă îl lași gol, nu apare nimic.
+          {t("account.nameHint")}
         </p>
         <button
           type="submit"
@@ -60,18 +62,18 @@ const AccountPage = () => {
           className="flex items-center gap-2 rounded-sm bg-primary px-5 py-3 font-body text-sm font-medium text-primary-foreground hover:brightness-125 disabled:opacity-50"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-          Salvează numele
+          {t("account.saveName")}
         </button>
       </form>
 
       <section className="space-y-3 border-t border-gold/10 pt-6">
-        <h2 className="font-display text-xl text-parchment">Parola</h2>
+        <h2 className="font-display text-xl text-parchment">{t("account.password")}</h2>
         <Link
           to="/admin/set-password"
           className="inline-flex items-center gap-2 rounded-sm border border-gold/40 px-5 py-3 font-body text-sm text-parchment hover:border-gold/70"
         >
           <KeyRound className="h-4 w-4" aria-hidden="true" />
-          Schimbă parola
+          {t("account.changePassword")}
         </Link>
       </section>
     </div>

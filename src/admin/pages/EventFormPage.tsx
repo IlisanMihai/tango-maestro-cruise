@@ -31,7 +31,9 @@ import {
   formFromEvent,
   type EventFormValues,
 } from "../lib/eventForm";
-import { EVENT_TYPE_LABELS, EVENT_TYPE_OPTIONS, LANGUAGE_NAMES } from "../lib/labels";
+import { EVENT_TYPE_OPTIONS, LANGUAGE_NAMES } from "../lib/labels";
+import { useAdminT } from "../i18n";
+import type { TFunction } from "i18next";
 import { resizeImage } from "../lib/resizeImage";
 import DateTimePicker from "../components/DateTimePicker";
 import LocationPicker from "../components/LocationPicker";
@@ -54,20 +56,24 @@ const Field = ({
   hint?: string;
   error?: FieldError | { message?: string };
   children: ReactNode;
-}) => (
-  <div>
-    <label id={`${htmlFor}-label`} htmlFor={htmlFor} className="mb-1 block font-body text-sm text-foreground/80">
-      {label}
-    </label>
-    {children}
-    {hint && !error && <p className="mt-1 font-body text-xs text-muted-foreground">{hint}</p>}
-    {error?.message && (
-      <p role="alert" className="mt-1 font-body text-sm text-destructive">
-        {error.message}
-      </p>
-    )}
-  </div>
-);
+}) => {
+  const { t } = useAdminT();
+  return (
+    <div>
+      <label id={`${htmlFor}-label`} htmlFor={htmlFor} className="mb-1 block font-body text-sm text-foreground/80">
+        {label}
+      </label>
+      {children}
+      {hint && !error && <p className="mt-1 font-body text-xs text-muted-foreground">{hint}</p>}
+      {error?.message && (
+        <p role="alert" className="mt-1 font-body text-sm text-destructive">
+          {/* validation messages are admin translation keys (errors.*) */}
+          {t(error.message as "errors.typeRequired")}
+        </p>
+      )}
+    </div>
+  );
+};
 
 /** Comparable form content (field order, empty select and undefined vs "" do not matter). */
 function snapshot(v: Partial<EventFormValues>): string {
@@ -89,20 +95,20 @@ function snapshot(v: Partial<EventFormValues>): string {
   ]);
 }
 
-function prefillErrorMessage(error: unknown): string {
+function prefillErrorMessage(error: unknown, t: TFunction<"admin">): string {
   const code = error instanceof InviteError ? error.code : "";
   switch (code) {
     case "bad_url":
-      return "Linkul nu pare valid. Copiază adresa completă, care începe cu https://";
+      return t("prefill.errors.badUrl");
     case "page_unreachable":
     case "not_html":
-      return "Pagina nu a putut fi citită. Verifică linkul sau completează manual.";
+      return t("prefill.errors.unreadable");
     case "gateway_jwt":
-      return "Supabase a refuzat cererea: la funcția „link-preview” dezactivează opțiunea „Verify JWT”.";
+      return t("prefill.errors.gateway");
     case "unreachable":
-      return "Funcția „link-preview” nu răspunde. Verifică dacă este publicată în Supabase (README, secțiunea 9).";
+      return t("prefill.errors.unreachable");
     default:
-      return "Datele de la link nu au putut fi preluate. Completează manual.";
+      return t("prefill.errors.generic");
   }
 }
 
@@ -140,6 +146,7 @@ const Section = ({ title, children }: { title: string; children: ReactNode }) =>
 
 const EventFormPage = () => {
   const { id } = useParams();
+  const { t } = useAdminT();
   const isNew = !id;
   const { profile, session } = useAuth();
   const navigate = useNavigate();
@@ -184,9 +191,9 @@ const EventFormPage = () => {
       slugEdited.current = true;
       reset(original);
       reset(draft, { keepDefaultValues: true });
-      toast("Am recuperat textele nesalvate de data trecută.", {
+      toast(t("form.toast.draftRestored"), {
         action: {
-          label: "Renunță la ele",
+          label: t("form.toast.discardDraft"),
           onClick: () => {
             clearDraft(draftKey);
             slugEdited.current = !isNew;
@@ -197,7 +204,7 @@ const EventFormPage = () => {
     } else {
       reset(original);
     }
-  }, [isNew, existing.data, reset, draftKey]);
+  }, [isNew, existing.data, reset, draftKey, t]);
 
   // Keep unsaved changes in this browser, so switching tabs, reloading or an
   // accidental close never loses what was typed. Cleared after saving.
@@ -232,9 +239,9 @@ const EventFormPage = () => {
       const blob = await resizeImage(file);
       const path = await uploadEventImage(blob, session.user.id, values.slug || slugify(values.title.ro));
       setValue("image_path", path, { shouldDirty: true });
-      toast.success("Poza a fost încărcată.");
+      toast.success(t("form.toast.photoUploaded"));
     } catch {
-      toast.error("Poza nu a putut fi încărcată. Încearcă altă poză (JPG, PNG sau WebP).");
+      toast.error(t("form.toast.photoFailed"));
     } finally {
       setUploading(false);
     }
@@ -246,13 +253,11 @@ const EventFormPage = () => {
     try {
       preview = await fetchLinkPreview(url);
     } catch (e) {
-      toast.error(prefillErrorMessage(e));
+      toast.error(prefillErrorMessage(e, t));
       return;
     }
     if (!preview.title && !preview.description && !preview.image) {
-      toast.error(
-        "Pagina nu are informații de previzualizare (de ex. un eveniment Facebook privat sau care cere login). Completează manual.",
-      );
+      toast.error(t("prefill.noPreview"));
       return;
     }
     const current = form.getValues();
@@ -262,22 +267,22 @@ const EventFormPage = () => {
 
     if (preview.title && !current.title.ro.trim()) {
       set("title.ro", preview.title);
-      filled.push("titlul");
+      filled.push(t("prefill.field.title"));
     }
     if (preview.description) {
       const short = shortSummary(preview.description);
       if (!current.summary.ro.trim()) {
         set("summary.ro", short);
-        filled.push("descrierea scurtă");
+        filled.push(t("prefill.field.summary"));
       }
       if (short !== preview.description && !current.content.ro.trim()) {
         set("content.ro", preview.description);
-        filled.push("descrierea completă");
+        filled.push(t("prefill.field.content"));
       }
     }
     if (!current.external_url.trim()) {
       set("external_url", preview.url || url);
-      filled.push("linkul extern");
+      filled.push(t("prefill.field.link"));
     }
     if (preview.image && !current.image_path && session) {
       setUploading(true);
@@ -285,9 +290,9 @@ const EventFormPage = () => {
         const blob = await resizeImage(await fetchLinkImage(preview.image));
         const base = form.getValues("slug") || slugify(form.getValues("title.ro"));
         setValue("image_path", await uploadEventImage(blob, session.user.id, base), { shouldDirty: true });
-        filled.push("poza");
+        filled.push(t("prefill.field.photo"));
       } catch {
-        toast.error("Poza de pe pagină nu a putut fi preluată; poți alege una manual.");
+        toast.error(t("prefill.photoFailed"));
       } finally {
         setUploading(false);
       }
@@ -295,9 +300,9 @@ const EventFormPage = () => {
 
     if (filled.length) {
       setLanguage("ro");
-      toast.success(`Am completat: ${filled.join(", ")}. Verifică textele, apoi alege tipul, data și ora.`);
+      toast.success(t("prefill.filled", { fields: filled.join(", ") }));
     } else {
-      toast("Câmpurile erau deja completate; nu am schimbat nimic.");
+      toast(t("prefill.nothingChanged"));
     }
   };
 
@@ -310,15 +315,15 @@ const EventFormPage = () => {
         await queryClient.invalidateQueries({ queryKey: ["admin"] });
         await queryClient.invalidateQueries({ queryKey: ["events"] });
         await queryClient.invalidateQueries({ queryKey: ["event"] });
-        toast.success(isNew ? "Evenimentul a fost adăugat." : "Modificările au fost salvate.");
+        toast.success(isNew ? t("form.toast.added") : t("form.toast.saved"));
         navigate("/admin");
       } catch (e) {
         if (e instanceof SlugTakenError) {
-          setError("slug", { message: "Această adresă e deja folosită de alt eveniment. Alege alta." });
+          setError("slug", { message: "errors.slugTaken" });
         } else if ((e as { code?: string }).code === "PGRST116" || (e as { code?: string }).code === "42501") {
-          toast.error("Nu ai dreptul să modifici acest eveniment.");
+          toast.error(t("form.toast.notAllowed"));
         } else {
-          toast.error("Evenimentul nu a putut fi salvat. Verifică datele și încearcă din nou.");
+          toast.error(t("form.toast.saveFailed"));
         }
       }
     },
@@ -328,17 +333,17 @@ const EventFormPage = () => {
         (lng) => formErrors.title?.[lng] || formErrors.summary?.[lng] || formErrors.content?.[lng],
       );
       if (tab) setLanguage(tab);
-      toast.error("Formularul are câmpuri de corectat.");
+      toast.error(t("form.toast.invalid"));
     },
   );
 
-  if (!isNew && existing.isPending) return <p className="font-body text-muted-foreground">Se încarcă...</p>;
+  if (!isNew && existing.isPending) return <p className="font-body text-muted-foreground">{t("app.loadingDots")}</p>;
   if (!isNew && (existing.isError || !existing.data)) {
     return (
       <div role="alert">
-        <p className="mb-4 font-body text-muted-foreground">Evenimentul nu a fost găsit sau nu ai acces la el.</p>
+        <p className="mb-4 font-body text-muted-foreground">{t("form.notFound")}</p>
         <Link to="/admin" className="text-gold underline">
-          Înapoi la listă
+          {t("app.backToList")}
         </Link>
       </div>
     );
@@ -346,11 +351,9 @@ const EventFormPage = () => {
   if (!canEdit) {
     return (
       <div role="alert">
-        <p className="mb-4 font-body text-muted-foreground">
-          Acest eveniment a fost adăugat de altcineva. Doar autorul sau un administrator îl poate modifica.
-        </p>
+        <p className="mb-4 font-body text-muted-foreground">{t("form.notYours")}</p>
         <Link to="/admin" className="text-gold underline">
-          Înapoi la listă
+          {t("app.backToList")}
         </Link>
       </div>
     );
@@ -380,10 +383,10 @@ const EventFormPage = () => {
           className="mb-4 inline-flex items-center gap-2 font-body text-sm text-muted-foreground hover:text-gold"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Toate evenimentele
+          {t("form.back")}
         </Link>
         <h1 className="font-display text-3xl text-parchment md:text-4xl">
-          {isNew ? "Eveniment nou" : "Editează evenimentul"}
+          {isNew ? t("form.titleNew") : t("form.titleEdit")}
         </h1>
       </div>
 
@@ -391,10 +394,8 @@ const EventFormPage = () => {
 
       {/* Texts, one tab per language */}
       <section className="space-y-4">
-        <h2 className="font-display text-xl text-parchment">Texte</h2>
-        <p className="font-body text-sm text-muted-foreground">
-          Româna e obligatorie. Pentru celelalte limbi, ce lipsește se afișează automat în română.
-        </p>
+        <h2 className="font-display text-xl text-parchment">{t("form.texts")}</h2>
+        <p className="font-body text-sm text-muted-foreground">{t("form.textsHint")}</p>
         <Tabs value={language} onValueChange={(v) => setLanguage(v as Locale)}>
           <TabsList className="h-auto w-full flex-wrap justify-start gap-1 bg-secondary/50">
             {LANGUAGES.map((lng) => {
@@ -405,7 +406,7 @@ const EventFormPage = () => {
                   key={lng}
                   value={lng}
                   className="gap-2 data-[state=active]:bg-background"
-                  aria-label={`${LANGUAGE_NAMES[lng]}: ${done ? "tradus" : "lipsește"}`}
+                  aria-label={`${LANGUAGE_NAMES[lng]}: ${done ? t("form.translated") : t("form.missing")}`}
                 >
                   <span
                     aria-hidden="true"
@@ -420,7 +421,11 @@ const EventFormPage = () => {
           </TabsList>
           {LANGUAGES.map((lng) => (
             <TabsContent key={lng} value={lng} className="space-y-4 pt-2">
-              <Field label={`Titlu (${LANGUAGE_NAMES[lng]})${lng === "ro" ? " *" : ""}`} htmlFor={`title-${lng}`} error={errors.title?.[lng]}>
+              <Field
+                label={`${t("form.titleField", { language: LANGUAGE_NAMES[lng] })}${lng === "ro" ? " *" : ""}`}
+                htmlFor={`title-${lng}`}
+                error={errors.title?.[lng]}
+              >
                 <input
                   id={`title-${lng}`}
                   className={inputClass}
@@ -429,9 +434,9 @@ const EventFormPage = () => {
                 />
               </Field>
               <Field
-                label={`Descriere scurtă (${LANGUAGE_NAMES[lng]})`}
+                label={t("form.summaryField", { language: LANGUAGE_NAMES[lng] })}
                 htmlFor={`summary-${lng}`}
-                hint="1–2 propoziții, apar pe cardul evenimentului."
+                hint={t("form.summaryHint")}
                 error={errors.summary?.[lng]}
               >
                 <textarea
@@ -443,9 +448,9 @@ const EventFormPage = () => {
                 />
               </Field>
               <Field
-                label={`Descriere completă (${LANGUAGE_NAMES[lng]})`}
+                label={t("form.contentField", { language: LANGUAGE_NAMES[lng] })}
                 htmlFor={`content-${lng}`}
-                hint="Program, prețuri, detalii. Rândurile noi se păstrează."
+                hint={t("form.contentHint")}
                 error={errors.content?.[lng]}
               >
                 <textarea
@@ -461,20 +466,20 @@ const EventFormPage = () => {
         </Tabs>
       </section>
 
-      <Section title="Detalii">
+      <Section title={t("form.details")}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Tip *" htmlFor="type" error={errors.type}>
+          <Field label={t("form.type")} htmlFor="type" error={errors.type}>
             <select id="type" className={inputClass} aria-invalid={Boolean(errors.type)} {...register("type")}>
-              <option value="">Alege tipul</option>
+              <option value="">{t("form.chooseType")}</option>
               {EVENT_TYPE_OPTIONS.map((type) => (
                 <option key={type} value={type}>
-                  {EVENT_TYPE_LABELS[type]}
+                  {t(`event.type.${type}`, { ns: "common" })}
                 </option>
               ))}
             </select>
           </Field>
           <Field
-            label="Adresa în site *"
+            label={t("form.slug")}
             htmlFor="slug"
             hint={`oradeatango.ro/events/${values.slug || "..."}`}
             error={errors.slug}
@@ -486,14 +491,14 @@ const EventFormPage = () => {
               {...register("slug", { onChange: () => (slugEdited.current = true) })}
             />
           </Field>
-          <Field label="Început (ora României) *" htmlFor="start" error={errors.start}>
+          <Field label={t("form.start")} htmlFor="start" error={errors.start}>
             <Controller
               control={form.control}
               name="start"
               render={({ field }) => (
                 <DateTimePicker
                   id="start"
-                  label="Început"
+                  label={t("form.startShort")}
                   value={field.value}
                   invalid={Boolean(errors.start)}
                   onChange={(next) => {
@@ -508,9 +513,9 @@ const EventFormPage = () => {
             />
           </Field>
           <Field
-            label="Sfârșit (ora României) *"
+            label={t("form.end")}
             htmlFor="end"
-            hint="Pentru o singură seară poate fi ziua următoare (ex. 02:00)."
+            hint={t("form.endHint")}
             error={errors.end}
           >
             <Controller
@@ -519,7 +524,7 @@ const EventFormPage = () => {
               render={({ field }) => (
                 <DateTimePicker
                   id="end"
-                  label="Sfârșit"
+                  label={t("form.endShort")}
                   value={field.value}
                   min={values.start || undefined}
                   invalid={Boolean(errors.end)}
@@ -532,9 +537,9 @@ const EventFormPage = () => {
             />
           </Field>
           <Field
-            label="Link extern"
+            label={t("form.externalUrl")}
             htmlFor="external_url"
-            hint="Opțional: evenimentul de pe Facebook sau formularul de înscriere."
+            hint={t("form.externalUrlHint")}
             error={errors.external_url}
           >
             <input
@@ -550,18 +555,16 @@ const EventFormPage = () => {
         </div>
       </Section>
 
-      <Section title="Locație">
+      <Section title={t("form.location")}>
         <Field
-          label="Numele locului și adresa"
+          label={t("form.locationName")}
           htmlFor="location"
-          hint="Așa apare pe site, ex.: Feeling Dance Studio, Strada Vasile Alecsandri 12, Oradea."
+          hint={t("form.locationHint")}
           error={errors.location}
         >
           <input id="location" className={inputClass} {...register("location")} />
         </Field>
-        <p className="font-body text-sm text-muted-foreground">
-          Opțional, alege locul exact pe hartă: pe site, butonul de locație deschide Google Maps fix în acel punct.
-        </p>
+        <p className="font-body text-sm text-muted-foreground">{t("form.mapHint")}</p>
         <LocationPicker
           point={values.latitude !== null && values.longitude !== null ? { lat: values.latitude, lng: values.longitude } : null}
           onPointChange={(point) => {
@@ -575,7 +578,7 @@ const EventFormPage = () => {
         />
       </Section>
 
-      <Section title="Poză">
+      <Section title={t("form.photo")}>
         <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
           <div className="aspect-[16/9] overflow-hidden rounded-sm bg-secondary">
             <img
@@ -591,7 +594,7 @@ const EventFormPage = () => {
               }`}
             >
               {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
-              {uploading ? "Se încarcă..." : imageUrl ? "Schimbă poza" : "Alege o poză"}
+              {uploading ? t("form.uploading") : imageUrl ? t("form.changePhoto") : t("form.choosePhoto")}
               <input
                 type="file"
                 accept="image/*"
@@ -610,24 +613,22 @@ const EventFormPage = () => {
                 className="flex items-center justify-center gap-2 rounded-sm px-5 py-2 font-body text-sm text-muted-foreground hover:text-foreground"
               >
                 <ImageOff className="h-4 w-4" aria-hidden="true" />
-                Fără poză
+                {t("form.noPhoto")}
               </button>
             )}
           </div>
         </div>
         <p className="font-body text-xs text-muted-foreground">
-          {imageUrl
-            ? "Poza e micșorată automat înainte de încărcare."
-            : "Fără poză proprie, pe site apare poza implicită (cea estompată de mai sus). Pe telefon poți face și o poză direct."}
+          {imageUrl ? t("form.photoResized") : t("form.photoDefault")}
         </p>
       </Section>
 
-      <Section title="Publicare">
-        <div role="radiogroup" aria-label="Stare" className="inline-flex gap-1 rounded-sm border border-gold/20 p-1">
+      <Section title={t("form.publishing")}>
+        <div role="radiogroup" aria-label={t("form.status")} className="inline-flex gap-1 rounded-sm border border-gold/20 p-1">
           {(
             [
-              ["draft", "Ciornă"],
-              ["published", "Publicat"],
+              ["draft", t("form.draft")],
+              ["published", t("form.published")],
             ] as const
           ).map(([value, label]) => (
             <button
@@ -645,9 +646,7 @@ const EventFormPage = () => {
           ))}
         </div>
         <p className="font-body text-xs text-muted-foreground">
-          {values.status === "published"
-            ? "Evenimentul apare pe site imediat după salvare."
-            : "Ciorna o vezi doar tu (și administratorii); nu apare pe site."}
+          {values.status === "published" ? t("form.publishedHint") : t("form.draftHint")}
         </p>
       </Section>
 
@@ -660,7 +659,7 @@ const EventFormPage = () => {
           className="flex items-center gap-2 rounded-sm border border-gold/40 px-4 py-3 font-body text-sm text-parchment hover:border-gold/70 disabled:opacity-40"
         >
           <Eye className="h-4 w-4" aria-hidden="true" />
-          Previzualizare
+          {t("form.preview")}
         </button>
         <button
           type="submit"
@@ -668,14 +667,14 @@ const EventFormPage = () => {
           className="flex flex-1 items-center justify-center gap-2 rounded-sm bg-primary px-6 py-3 font-body text-sm font-medium text-primary-foreground hover:brightness-125 disabled:opacity-60 sm:flex-none"
         >
           {formState.isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isNew ? "Adaugă evenimentul" : "Salvează"}
+          {isNew ? t("form.add") : t("form.save")}
         </button>
       </div>
 
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Cum apare pe site</DialogTitle>
+            <DialogTitle>{t("form.previewTitle")}</DialogTitle>
           </DialogHeader>
           <div className="pointer-events-none" aria-hidden="true">
             {preview && <EventCard event={preview} />}
