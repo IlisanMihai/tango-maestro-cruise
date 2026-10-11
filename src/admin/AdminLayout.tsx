@@ -3,6 +3,8 @@ import { Link, NavLink, Navigate, useLocation } from "react-router-dom";
 import { ExternalLink, Loader2, LogOut } from "lucide-react";
 import { useAuth } from "./auth";
 import { useAdminHead } from "./useAdminHead";
+import { useAdminT } from "./i18n";
+import AdminLanguageSwitch from "./components/AdminLanguageSwitch";
 
 const AdminNavLink = ({ to, end, children }: { to: string; end?: boolean; children: ReactNode }) => (
   <NavLink
@@ -18,15 +20,19 @@ const AdminNavLink = ({ to, end, children }: { to: string; end?: boolean; childr
   </NavLink>
 );
 
-export const FullPageSpinner = () => (
-  <div className="flex min-h-screen items-center justify-center" aria-busy="true">
-    <Loader2 className="h-8 w-8 animate-spin text-gold" aria-label="Se încarcă" />
-  </div>
-);
+export const FullPageSpinner = () => {
+  const { t } = useAdminT();
+  return (
+    <div className="flex min-h-screen items-center justify-center" aria-busy="true">
+      <Loader2 className="h-8 w-8 animate-spin text-gold" aria-label={t("app.loading")} />
+    </div>
+  );
+};
 
 /** Top bar of the admin area: site name, who is logged in, link to the site, logout. */
 export const AdminLayout = ({ children }: { children: ReactNode }) => {
   useAdminHead();
+  const { t } = useAdminT();
   const { profile, session, signOut } = useAuth();
 
   return (
@@ -34,12 +40,13 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
       <header className="sticky top-0 z-40 border-b border-gold/10 bg-background/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Link to="/admin" className="font-display text-lg text-parchment hover:text-gold">
-            Administrare
+            {t("app.title")}
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
+            <AdminLanguageSwitch />
             <span className="hidden max-w-[16rem] truncate font-body text-sm text-muted-foreground sm:inline">
               {profile?.name || session?.user.email}
-              {profile?.role === "admin" && <span className="ml-2 text-gold">· admin</span>}
+              {profile?.role === "admin" && <span className="ml-2 text-gold">· {t("nav.adminBadge")}</span>}
             </span>
             <a
               href="/events"
@@ -48,8 +55,8 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
               className="flex items-center gap-1 rounded-sm px-2 py-1.5 font-body text-sm text-muted-foreground hover:text-foreground"
             >
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Vezi site-ul</span>
-              <span className="sr-only sm:hidden">Vezi site-ul</span>
+              <span className="hidden sm:inline">{t("nav.viewSite")}</span>
+              <span className="sr-only sm:hidden">{t("nav.viewSite")}</span>
             </a>
             <button
               type="button"
@@ -57,16 +64,17 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
               className="flex items-center gap-1 rounded-sm px-2 py-1.5 font-body text-sm text-muted-foreground hover:text-foreground"
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />
-              <span>Ieșire</span>
+              <span className="hidden sm:inline">{t("nav.signOut")}</span>
+              <span className="sr-only sm:hidden">{t("nav.signOut")}</span>
             </button>
           </div>
         </div>
-        <nav aria-label="Secțiuni" className="mx-auto flex max-w-5xl gap-5 px-4 sm:px-6">
+        <nav aria-label={t("nav.sections")} className="mx-auto flex max-w-5xl gap-5 px-4 sm:px-6">
           <AdminNavLink to="/admin" end>
-            Evenimente
+            {t("nav.events")}
           </AdminNavLink>
-          {profile?.role === "admin" && <AdminNavLink to="/admin/users">Utilizatori</AdminNavLink>}
-          <AdminNavLink to="/admin/account">Contul meu</AdminNavLink>
+          {profile?.role === "admin" && <AdminNavLink to="/admin/users">{t("nav.users")}</AdminNavLink>}
+          <AdminNavLink to="/admin/account">{t("nav.account")}</AdminNavLink>
         </nav>
       </header>
       <main className="mx-auto max-w-5xl px-4 pb-24 pt-6 sm:px-6 md:pt-10">{children}</main>
@@ -77,6 +85,7 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
 /** Lets only signed-in, active staff through; everyone else goes to the login page. */
 export const RequireStaff = ({ children }: { children: ReactNode }) => {
   useAdminHead();
+  const { t } = useAdminT();
   const { session, profile, loading, signOut } = useAuth();
   const location = useLocation();
 
@@ -88,16 +97,14 @@ export const RequireStaff = ({ children }: { children: ReactNode }) => {
     return (
       <div className="flex min-h-screen items-center justify-center px-6">
         <div className="max-w-md text-center" role="alert">
-          <h1 className="mb-3 font-display text-3xl text-parchment">Cont inactiv</h1>
-          <p className="mb-6 font-body text-muted-foreground">
-            Contul {session.user.email} nu are încă acces la administrare. Cere unui administrator să ți-l activeze.
-          </p>
+          <h1 className="mb-3 font-display text-3xl text-parchment">{t("inactive.title")}</h1>
+          <p className="mb-6 font-body text-muted-foreground">{t("inactive.text", { email: session.user.email })}</p>
           <button
             type="button"
             onClick={signOut}
             className="rounded-sm border border-gold/40 px-6 py-3 font-body text-sm text-parchment hover:border-gold/70"
           >
-            Ieșire
+            {t("nav.signOut")}
           </button>
         </div>
       </div>

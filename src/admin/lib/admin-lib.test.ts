@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import i18n from "@/i18n";
+import "../i18n"; // registers the admin translations
 import { fromBucharestInput, toBucharestInput } from "./datetime";
 import { slugify, SLUG_PATTERN } from "./slug";
 import { emptyEventForm, eventFormSchema, eventFromForm, formFromEvent, type EventFormValues } from "./eventForm";
@@ -49,9 +51,10 @@ const valid = (): EventFormValues => ({
   title: { ro: "Milonga de toamnă", en: "Autumn milonga", hu: "", es: "", sk: "" },
 });
 
-const errorsOf = (values: EventFormValues) => {
+// Validation messages are admin translation keys; read them as the Romanian admin shows them.
+const errorsOf = (values: EventFormValues, lng: "ro" | "en" = "ro") => {
   const result = eventFormSchema.safeParse(values);
-  return result.success ? [] : result.error.issues.map((issue) => issue.message);
+  return result.success ? [] : result.error.issues.map((issue) => i18n.t(issue.message as "errors.typeRequired", { ns: "admin", lng }));
 };
 
 describe("event form validation", () => {
@@ -68,6 +71,7 @@ describe("event form validation", () => {
 
   it("rejects an end before the start", () => {
     expect(errorsOf({ ...valid(), end: "2026-11-07T20:00" })).toContain("Sfârșitul nu poate fi înainte de început.");
+    expect(errorsOf({ ...valid(), end: "2026-11-07T20:00" }, "en")).toContain("The end cannot be before the start.");
   });
 
   it("rejects a translation without the Romanian text", () => {
@@ -108,8 +112,8 @@ describe("form <-> database row", () => {
   });
 });
 
-it("type options are alphabetical with 'altul' last", () => {
-  expect(EVENT_TYPE_OPTIONS).toEqual(["curs", "encuentro", "festival", "maraton", "milonga", "practica", "workshop", "altul"]);
+it("type options use the same fixed order as the public filters", () => {
+  expect(EVENT_TYPE_OPTIONS).toEqual(["curs", "practica", "milonga", "festival", "workshop", "maraton", "encuentro", "altul"]);
 });
 
 describe("shortSummary", () => {

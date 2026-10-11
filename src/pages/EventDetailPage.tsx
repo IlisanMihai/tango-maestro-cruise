@@ -110,7 +110,7 @@ const EventDetailPage = () => {
 
             <div className="max-w-content mx-auto px-6">
               <div className="mx-auto max-w-2xl pt-8">
-                <p className="mb-3 font-body text-sm uppercase tracking-[0.2em] text-gold">
+                <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.2em] text-primary">
                   {t(`event.type.${event.type}`)}
                 </p>
                 <h1 className="mb-6 font-display text-4xl md:text-5xl font-semibold leading-tight text-parchment">

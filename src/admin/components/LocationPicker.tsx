@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Loader2, MapPin, Search, X } from "lucide-react";
+import { useAdminT } from "../i18n";
 
 // Free map: OpenStreetMap tiles + Nominatim address search (no account, no key, no cost).
 // Nominatim allows light use: one search per click, never per keystroke.
@@ -43,6 +44,7 @@ const LocationPicker = ({
   /** Called with the address of a chosen search result. */
   onPickLabel: (label: string) => void;
 }) => {
+  const { t, language } = useAdminT();
   const mapEl = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const marker = useRef<L.Marker | null>(null);
@@ -104,7 +106,7 @@ const LocationPicker = ({
         format: "jsonv2",
         limit: "5",
         countrycodes: "ro,hu",
-        "accept-language": "ro",
+        "accept-language": language,
         // Prefer Oradea and around, without excluding other places.
         viewbox: "21.80,47.12,22.05,46.99",
       }).toString();
@@ -112,7 +114,7 @@ const LocationPicker = ({
       if (!res.ok) throw new Error(String(res.status));
       setResults((await res.json()) as SearchResult[]);
     } catch {
-      setError("Căutarea nu a mers acum. Poți pune punctul direct, cu un click pe hartă.");
+      setError(t("map.searchFailed"));
       setResults(null);
     } finally {
       setSearching(false);
@@ -138,14 +140,14 @@ const LocationPicker = ({
     <div className="space-y-3">
       <div className="flex gap-2">
         <label className="relative min-w-0 flex-1">
-          <span className="sr-only">Caută adresa pe hartă</span>
+          <span className="sr-only">{t("map.search")}</span>
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={query || "Ex.: Strada Sovata 1B, Oradea"}
+            placeholder={query || t("map.searchPlaceholder")}
             className="w-full rounded-sm border border-gold/20 bg-secondary/50 py-2.5 pl-9 pr-3 font-body text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
           />
         </label>
@@ -156,7 +158,7 @@ const LocationPicker = ({
           className="flex items-center gap-2 rounded-sm border border-gold/40 px-4 py-2.5 font-body text-sm text-parchment hover:border-gold/70 disabled:opacity-60"
         >
           {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" aria-hidden="true" />}
-          Caută
+          {t("map.searchButton")}
         </button>
       </div>
 
@@ -166,10 +168,10 @@ const LocationPicker = ({
         </p>
       )}
       {results && (
-        <ul className="divide-y divide-gold/10 rounded-sm border border-gold/20" aria-label="Rezultate">
+        <ul className="divide-y divide-gold/10 rounded-sm border border-gold/20" aria-label={t("map.results")}>
           {results.length === 0 && (
             <li className="px-3 py-2 font-body text-sm text-muted-foreground">
-              Nu am găsit adresa. Încearcă doar strada și orașul, sau pune punctul cu un click pe hartă.
+              {t("map.notFound")}
             </li>
           )}
           {results.map((r) => (
@@ -191,13 +193,13 @@ const LocationPicker = ({
         ref={mapEl}
         data-testid="location-map"
         className="relative z-0 h-64 w-full overflow-hidden rounded-sm border border-gold/20"
-        aria-label="Hartă: dă click pentru a pune locul evenimentului"
+        aria-label={t("map.label")}
       />
       <div className="flex flex-wrap items-center justify-between gap-2 font-body text-xs text-muted-foreground">
         <span>
           {point
-            ? `Punct ales: ${point.lat.toFixed(5)}, ${point.lng.toFixed(5)} (îl poți trage pe hartă)`
-            : "Caută adresa sau dă click pe hartă ca să pui locul exact."}
+            ? t("map.pointChosen", { lat: point.lat.toFixed(5), lng: point.lng.toFixed(5) })
+            : t("map.pointHint")}
         </span>
         {point && (
           <button
@@ -206,7 +208,7 @@ const LocationPicker = ({
             className="flex items-center gap-1 rounded-sm px-2 py-1 text-muted-foreground hover:text-foreground"
           >
             <X className="h-3 w-3" aria-hidden="true" />
-            Șterge punctul
+            {t("map.removePoint")}
           </button>
         )}
       </div>

@@ -7,7 +7,7 @@ import EventCard from "@/components/EventCard";
 import Footer from "@/components/Footer";
 import EventTabs from "@/components/EventTabs";
 import {
-  EVENT_TYPES,
+  EVENT_TYPE_FILTER_ORDER,
   fetchActiveEvents,
   fetchPastEvents,
   parseEventTypes,
@@ -134,13 +134,13 @@ const EventsPage = () => {
   // Several types can be selected at once: ?type=milonga,practica
   const selectedTypes = parseEventTypes(searchParams.get("type"));
 
-  // Alphabetical by the label in the current language, "altul" (other) always last.
+  // A fixed order, the same in every language.
   const types = useMemo(
     () =>
-      EVENT_TYPES.filter((ty) => ty !== "altul")
-        .map((ty): { value: EventType; label: string } => ({ value: ty, label: t(`event.type.${ty}`) }))
-        .sort((a, b) => a.label.localeCompare(b.label))
-        .concat({ value: "altul", label: t("event.type.altul") }),
+      EVENT_TYPE_FILTER_ORDER.map((ty): { value: EventType; label: string } => ({
+        value: ty,
+        label: t(`event.type.${ty}`),
+      })),
     [t],
   );
 

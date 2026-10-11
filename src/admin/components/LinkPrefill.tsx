@@ -1,11 +1,13 @@
 import { useState, type FormEvent, type KeyboardEvent } from "react";
 import { Link2, Loader2 } from "lucide-react";
+import { useAdminT } from "../i18n";
 
 /**
  * "Fill in from a link": paste the address of the event page (Facebook,
  * a festival site...), and the form takes its title, description and photo.
  */
 const LinkPrefill = ({ onPrefill }: { onPrefill: (url: string) => Promise<void> }) => {
+  const { t } = useAdminT();
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -31,11 +33,10 @@ const LinkPrefill = ({ onPrefill }: { onPrefill: (url: string) => Promise<void> 
     <section className="space-y-2 rounded-sm border border-dashed border-gold/30 p-4">
       <label htmlFor="prefill-url" className="flex items-center gap-2 font-body text-sm font-medium text-parchment">
         <Link2 className="h-4 w-4 text-gold" aria-hidden="true" />
-        Completează din link (opțional)
+        {t("prefill.label")}
       </label>
       <p className="font-body text-xs text-muted-foreground">
-        Lipește linkul paginii evenimentului (ex. evenimentul de pe Facebook) și preiau titlul, descrierea și poza. Data,
-        ora și tipul le alegi tu.
+        {t("prefill.hint")}
       </p>
       <div className="flex gap-2">
         <input
@@ -55,7 +56,7 @@ const LinkPrefill = ({ onPrefill }: { onPrefill: (url: string) => Promise<void> 
           className="flex items-center gap-2 rounded-sm border border-gold/40 px-4 py-2.5 font-body text-sm text-parchment hover:border-gold/70 disabled:opacity-50"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-          Preia datele
+          {t("prefill.button")}
         </button>
       </div>
     </section>

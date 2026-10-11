@@ -1,20 +1,10 @@
-import { EVENT_TYPES } from "@/lib/events";
+import { EVENT_TYPE_FILTER_ORDER } from "@/lib/events";
 import type { EventType, Locale } from "@/lib/supabase";
-import roCommon from "@/locales/ro/common.json";
 
-/** The admin area is in Romanian: type names come from the Romanian site texts. */
-export const EVENT_TYPE_LABELS = Object.fromEntries(
-  EVENT_TYPES.map((type) => [type, roCommon[`event.type.${type}` as keyof typeof roCommon]]),
-) as Record<EventType, string>;
+/** Types in the form's dropdown: the same fixed order as the filters on the site. */
+export const EVENT_TYPE_OPTIONS: EventType[] = EVENT_TYPE_FILTER_ORDER;
 
-/** Types for the form's dropdown: alphabetical, "Altul" last (same order as the public filters). */
-export const EVENT_TYPE_OPTIONS: EventType[] = [
-  ...EVENT_TYPES.filter((type) => type !== "altul").sort((a, b) =>
-    EVENT_TYPE_LABELS[a].localeCompare(EVENT_TYPE_LABELS[b], "ro"),
-  ),
-  "altul",
-];
-
+/** Each language in its own name, for the text tabs of the event form. */
 export const LANGUAGE_NAMES: Record<Locale, string> = {
   ro: "Română",
   en: "English",

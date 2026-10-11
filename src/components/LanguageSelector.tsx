@@ -30,6 +30,9 @@ const LanguageSelector = ({ floating = true }: { floating?: boolean }) => {
         <Link
           key={lang}
           to={localizePath(path, lang) + location.search + location.hash}
+          // Same page in another language: replace the history entry, so "Back"
+          // goes to the previous page, not to this page in the old language.
+          replace
           hrefLang={lang}
           lang={lang}
           aria-current={language === lang ? "true" : undefined}

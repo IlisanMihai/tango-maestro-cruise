@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { ro } from "date-fns/locale";
+import { enGB, ro } from "date-fns/locale";
+import { useAdminT } from "../i18n";
 import { CalendarDays } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -39,6 +40,8 @@ const DateTimePicker = ({
   /** Earliest allowed value ("YYYY-MM-DDTHH:mm"): earlier days, hours and minutes are disabled. */
   min?: string;
 }) => {
+  const { t, language } = useAdminT();
+  const locale = language === "en" ? enGB : ro;
   const [open, setOpen] = useState(false);
   const [day, time] = value ? value.split("T") : ["", ""];
   const [hour, minute] = (time || "").split(":");
@@ -69,12 +72,12 @@ const DateTimePicker = ({
             id={id}
             type="button"
             aria-invalid={invalid}
-            aria-label={`${label}: ${selected ? format(selected, "EEEE, d MMMM yyyy", { locale: ro }) : "alege data"}`}
+            aria-label={`${label}: ${selected ? format(selected, "EEEE, d MMMM yyyy", { locale }) : t("date.chooseLower")}`}
             className="flex min-w-0 flex-1 items-center gap-2 rounded-sm border border-gold/20 bg-secondary/50 px-3 py-2.5 text-left font-body text-base text-foreground hover:border-gold/50 focus:border-primary focus:outline-none aria-[invalid=true]:border-destructive"
           >
             <CalendarDays className="h-5 w-5 shrink-0 text-gold" aria-hidden="true" />
             <span className={`truncate first-letter:uppercase ${selected ? "" : "text-muted-foreground"}`}>
-              {selected ? format(selected, "EEEE, d MMMM yyyy", { locale: ro }) : "Alege data"}
+              {selected ? format(selected, "EEEE, d MMMM yyyy", { locale }) : t("date.choose")}
             </span>
           </button>
         </PopoverTrigger>
@@ -86,15 +89,15 @@ const DateTimePicker = ({
         >
           <Calendar
             mode="single"
-            locale={ro}
+            locale={locale}
             weekStartsOn={1}
             selected={selected}
             defaultMonth={selected ?? (minDay ? toDate(minDay) : new Date())}
             disabled={minDay ? { before: toDate(minDay) } : undefined}
             onSelect={setDay}
             labels={{
-              labelNext: () => "Luna următoare",
-              labelPrevious: () => "Luna anterioară",
+              labelNext: () => t("date.nextMonth"),
+              labelPrevious: () => t("date.previousMonth"),
             }}
             initialFocus
           />
@@ -102,7 +105,7 @@ const DateTimePicker = ({
       </Popover>
       <div className="flex items-center gap-1">
         <select
-          aria-label={`${label}: ora`}
+          aria-label={t("date.hour", { label })}
           className={selectClass}
           aria-invalid={invalid}
           value={hour ?? ""}
@@ -117,7 +120,7 @@ const DateTimePicker = ({
         </select>
         <span className="text-muted-foreground">:</span>
         <select
-          aria-label={`${label}: minutele`}
+          aria-label={t("date.minutes", { label })}
           className={selectClass}
           aria-invalid={invalid}
           value={minute ?? ""}

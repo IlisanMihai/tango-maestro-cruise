@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { test, expect } from "../playwright-fixture";
 import { mockSupabase } from "./support/supabaseMock";
 
@@ -31,7 +32,7 @@ test("events page: active events by start date, responsive grid", async ({ page 
   await page.screenshot({ path: `e2e/screenshots/events-ro-${testInfo.project.name}.png`, fullPage: true });
 });
 
-test("type filters: alphabetical, 'Altul' last, several at once, 'Toate' clears", async ({ page }, testInfo) => {
+test("type filters: fixed order, several at once, 'Toate' clears", async ({ page }, testInfo) => {
   await mockSupabase(page);
   await page.goto("/events");
 
@@ -39,12 +40,12 @@ test("type filters: alphabetical, 'Altul' last, several at once, 'Toate' clears"
   expect(await filters.allInnerTexts()).toEqual([
     "Toate",
     "Curs",
-    "Encuentro",
-    "Festival",
-    "Maraton",
-    "Milonga",
     "Practică",
+    "Milonga",
+    "Festival",
     "Workshop",
+    "Maraton",
+    "Encuentro",
     "Altul",
   ]);
   const chip = (name: string) => page.getByRole("button", { name, exact: true });
@@ -198,6 +199,9 @@ test("event page shows everything about the event", async ({ page }, testInfo) =
 
   await expect(page).toHaveURL(/\/events\/milonga-de-toamna$/);
   await expect(page.getByRole("heading", { level: 1, name: "Milonga de toamnă" })).toBeVisible();
+  // the type uses the same orange as on the cards and the buttons
+  const orange = await page.getByRole("link", { name: "RO", exact: true }).evaluate((el) => getComputedStyle(el).backgroundColor);
+  await expect(page.locator("article").getByText("Milonga", { exact: true })).toHaveCSS("color", orange);
   // the map link opens the exact point picked in the admin
   await expect(page.getByText("Feeling Dance Studio, Oradea")).toHaveAttribute(
     "href",
@@ -267,8 +271,8 @@ test("on a phone an event card is at most half the screen, without the location"
   for (const c of await page.locator("main a[href*='/events/']").all()) {
     expect((await c.boundingBox())!.height).toBeLessThanOrEqual(viewport.height / 2);
   }
-  // photo flush top-left on half the card, title to its right,
-  // then date (left) and type (right) on one line, then the summary
+  // photo flush top-left on 60% of the card; next to it the date (top) and the
+  // type (bottom right, level with the photo's bottom); title and summary below
   const [box, photo, title, date, type, summary] = await Promise.all([
     card.boundingBox(),
     card.locator("img").boundingBox(),
@@ -279,14 +283,19 @@ test("on a phone an event card is at most half the screen, without the location"
   ]);
   expect(Math.abs(photo!.x - box!.x)).toBeLessThanOrEqual(1.5);
   expect(Math.abs(photo!.y - box!.y)).toBeLessThanOrEqual(1.5);
-  expect(Math.abs(photo!.width - box!.width / 2)).toBeLessThanOrEqual(2);
-  expect(title!.x).toBeGreaterThanOrEqual(photo!.x + photo!.width - 1);
-  expect(date!.y).toBeGreaterThanOrEqual(photo!.y + photo!.height - 1);
-  expect(date!.x).toBeLessThan(box!.x + box!.width / 2);
-  expect(type!.x + type!.width).toBeGreaterThan(box!.x + box!.width - 30);
-  // same line: the type sits on the date's first line (a long date may wrap)
-  expect(Math.abs(type!.y - date!.y)).toBeLessThan(8);
-  expect(summary!.y).toBeGreaterThanOrEqual(date!.y + date!.height - 1);
+  expect(Math.abs(photo!.width - box!.width * 0.6)).toBeLessThanOrEqual(2);
+  expect(date!.x).toBeGreaterThanOrEqual(photo!.x + photo!.width - 1);
+  expect(date!.y).toBeLessThan(photo!.y + 20);
+  expect(type!.x + type!.width).toBeGreaterThan(box!.x + box!.width - 20);
+  // the type's bottom is on the same line as the photo's bottom (no margin)
+  expect(Math.abs(photo!.y + photo!.height - (type!.y + type!.height))).toBeLessThanOrEqual(1);
+  // the title has the full width under the photo, the summary below it
+  expect(title!.y).toBeGreaterThanOrEqual(photo!.y + photo!.height - 1);
+  expect(title!.width).toBeGreaterThan(box!.width / 2);
+  expect(summary!.y).toBeGreaterThanOrEqual(title!.y + title!.height - 1);
+  // the type uses the orange accent of the buttons
+  const orange = await page.getByRole("link", { name: "RO", exact: true }).evaluate((el) => getComputedStyle(el).backgroundColor);
+  await expect(card.getByText("Milonga", { exact: true })).toHaveCSS("color", orange);
   await expect(card.locator("p.line-clamp-3")).toHaveCSS("-webkit-line-clamp", "3");
   await expect(page.locator("main").getByText("Feeling Dance Studio, Oradea")).toHaveCount(0);
 });
@@ -325,7 +334,7 @@ test("the top bar hides when scrolling down and returns when scrolling up", asyn
     .toBeGreaterThanOrEqual(bar.y + bar.height - 1);
 });
 
-test("on wider screens a card shows photo, title, date/type line, then the summary", async ({ page }, testInfo) => {
+test("on wider screens a card shows photo, type (right), date, title, then the summary", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "phone-portrait", "wider screens only");
   await mockSupabase(page);
   await page.goto("/events");
@@ -340,11 +349,14 @@ test("on wider screens a card shows photo, title, date/type line, then the summa
     card.locator("p.line-clamp-3").boundingBox(),
   ]);
   expect(Math.abs(photo!.width - box!.width)).toBeLessThanOrEqual(2);
-  expect(title!.y).toBeGreaterThanOrEqual(photo!.y + photo!.height - 1);
-  expect(date!.y).toBeGreaterThanOrEqual(title!.y + title!.height - 1);
-  expect(type!.x).toBeGreaterThan(date!.x);
+  // right under the photo, on the right: the type
+  expect(type!.y).toBeGreaterThanOrEqual(photo!.y + photo!.height - 1);
   expect(type!.x + type!.width).toBeGreaterThan(box!.x + box!.width - 30);
-  expect(summary!.y).toBeGreaterThanOrEqual(date!.y + date!.height - 1);
+  // then the date (left), the title and the summary
+  expect(date!.y).toBeGreaterThanOrEqual(type!.y + type!.height - 1);
+  expect(date!.x).toBeLessThan(box!.x + 30);
+  expect(title!.y).toBeGreaterThanOrEqual(date!.y + date!.height - 1);
+  expect(summary!.y).toBeGreaterThanOrEqual(title!.y + title!.height - 1);
 });
 
 test("the event page shows who added the event, when known", async ({ page }) => {
@@ -359,4 +371,40 @@ test("the event page shows who added the event, when known", async ({ page }) =>
   await page.goto("/events/practica-de-joi");
   await expect(page.getByRole("heading", { level: 1, name: "Practică ghidată" })).toBeVisible();
   await expect(page.getByText(/Adăugat de/)).toHaveCount(0);
+});
+
+test("long titles are cut with … (2 lines on phones, 3 on wider screens)", async ({ page }, testInfo) => {
+  const db = await mockSupabase(page);
+  db.events[0].title = {
+    ro: "Milonga de toamnă cu orchestră live, invitați din Buenos Aires, cursuri de dimineață și petrecere până dimineața în grădina castelului din Oradea",
+  };
+  await page.goto("/events");
+  const title = page.locator("main a[href$='/milonga-de-toamna'] h3");
+  await expect(title).toBeVisible();
+  const lines = testInfo.project.name === "phone-portrait" ? 2 : 3;
+  await expect(title).toHaveCSS("-webkit-line-clamp", String(lines));
+  const { height, lineHeight, cut } = await title.evaluate((el) => ({
+    height: el.getBoundingClientRect().height,
+    lineHeight: parseFloat(getComputedStyle(el).lineHeight),
+    cut: el.scrollHeight > el.clientHeight,
+  }));
+  expect(cut).toBe(true);
+  // padding-top included: at most `lines` lines of text
+  expect(height).toBeLessThanOrEqual(lines * lineHeight + 16);
+});
+
+test("the type filters keep the same order in every language", async ({ page }) => {
+  await mockSupabase(page);
+  const order = async (lang: string, name: string) => {
+    await page.goto(`/${lang}/events`);
+    return page.getByRole("navigation", { name }).getByRole("button").allInnerTexts();
+  };
+  expect(await order("hu", "Esemény típusa")).toEqual([
+    "Mind", "Kurzus", "Práctica", "Milonga", "Fesztivál", "Workshop", "Maraton", "Encuentro", "Egyéb",
+  ]);
+  const en = JSON.parse(readFileSync("src/locales/en/common.json", "utf8")) as Record<string, string>;
+  expect(await order("en", "Event type")).toEqual([
+    en["events.filter.all"],
+    ...["curs", "practica", "milonga", "festival", "workshop", "maraton", "encuentro", "altul"].map((ty) => en[`event.type.${ty}`]),
+  ]);
 });

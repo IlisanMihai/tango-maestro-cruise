@@ -141,3 +141,34 @@ test.describe("on a real phone with an English browser", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "ro");
   });
 });
+
+test("changing the language does not add a step to the browser history", async ({ page }) => {
+  await mockEvents(page);
+  await page.goto("/");
+  await page.getByRole("link", { name: "Vezi evenimentele" }).click();
+  await expect(page).toHaveURL(/\/events$/);
+
+  // switch languages a few times on the events page
+  await page.getByRole("link", { name: "EN", exact: true }).click();
+  await expect(page).toHaveURL(/\/en\/events$/);
+  await page.getByRole("link", { name: "HU", exact: true }).click();
+  await expect(page).toHaveURL(/\/hu\/events$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "hu");
+
+  // Back goes to the previous page (the homepage), shown in the chosen language
+  await page.goBack();
+  await expect(page).toHaveURL(/\/hu$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Argentin tangó");
+
+  // and Forward returns to the events page, still in Hungarian
+  await page.goForward();
+  await expect(page).toHaveURL(/\/hu\/events$/);
+});
+
+test("a link in another language follows the language the visitor picked", async ({ page }) => {
+  await mockEvents(page);
+  await page.addInitScript(() => localStorage.setItem("lang", "sk"));
+  await page.goto("/en/events");
+  await expect(page).toHaveURL(/\/sk\/events$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "sk");
+});

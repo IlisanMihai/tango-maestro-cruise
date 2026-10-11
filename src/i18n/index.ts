@@ -73,6 +73,16 @@ export function preferredLanguage(): Language | null {
   return null;
 }
 
+/** The language the visitor picked with the flags, if any. */
+export function storedLanguage(): Language | null {
+  try {
+    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return isLanguage(stored) ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
 export function rememberLanguage(language: Language) {
   try {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);

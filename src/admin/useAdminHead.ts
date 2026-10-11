@@ -1,10 +1,17 @@
 import { useEffect } from "react";
+import { useAdminT } from "./i18n";
 
-/** Admin pages are Romanian-only and must not be indexed. */
+/** Admin pages: page language and title, and never indexed by search engines. */
 export function useAdminHead() {
+  const { t, language } = useAdminT();
+  const title = t("app.title");
+
   useEffect(() => {
-    document.documentElement.lang = "ro";
-    document.title = "Administrare | Tango Oradea";
+    document.documentElement.lang = language;
+    document.title = `${title} | Tango Oradea`;
+  }, [language, title]);
+
+  useEffect(() => {
     let robots = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
     if (!robots) {
       robots = document.createElement("meta");

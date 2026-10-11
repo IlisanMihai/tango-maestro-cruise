@@ -16,6 +16,18 @@ export const EVENT_TYPES: EventType[] = [
   "workshop",
 ];
 
+/** Order of the type filters on the events page: the same in every language. */
+export const EVENT_TYPE_FILTER_ORDER: EventType[] = [
+  "curs",
+  "practica",
+  "milonga",
+  "festival",
+  "workshop",
+  "maraton",
+  "encuentro",
+  "altul",
+];
+
 export const isEventType = (value: unknown): value is EventType =>
   typeof value === "string" && (EVENT_TYPES as string[]).includes(value);
 
