@@ -23,7 +23,7 @@ const UpcomingEventsSection = () => {
   if (!isSupabaseConfigured || isError) return null;
 
   return (
-    <section id="events" className="py-16 md:py-24" aria-busy={isPending}>
+    <section id="events" className="py-16 md:py-24 bg-secondary/50" aria-busy={isPending}>
       <div className="max-w-content mx-auto px-6">
         <p className="font-body text-sm md:text-center tracking-[0.3em] uppercase text-gold mb-4">
           {t("home.upcoming.label")}
@@ -48,10 +48,10 @@ const UpcomingEventsSection = () => {
           </div>
         )}
 
-        <div className="mt-10 md:text-center">
+        <div className="mt-10 text-center">
           <Link
             to={localize("/events")}
-            className="inline-block border border-gold/40 text-parchment px-8 py-3.5 font-body text-base md:text-sm font-medium tracking-wide rounded-sm hover:border-gold/70 transition-all"
+            className="inline-block bg-primary text-primary-foreground text-parchment px-8 py-3.5 font-body text-base md:text-sm font-medium tracking-wide rounded-sm hover:brightness-125 transition-all"
           >
             {t("home.upcoming.all")}
           </Link>

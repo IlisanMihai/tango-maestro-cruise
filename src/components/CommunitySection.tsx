@@ -4,7 +4,7 @@ const CommunitySection = () => {
   const { t } = useTranslation();
 
   return (
-    <section id="community" className="py-16 md:py-24 bg-secondary/50">
+    <section id="community" className="py-16 md:py-24">
       <div className="max-w-content mx-auto px-6">
         <div className="max-w-2xl md:mx-auto md:text-center">
           <p className="font-body text-sm tracking-[0.3em] uppercase text-gold mb-4">

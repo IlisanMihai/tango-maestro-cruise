@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { setPageMetadata } from "@/lib/utils";
 import { useLocalizedPath } from "@/i18n/useLocalizedPath";
 import { SITE_URL } from "@/i18n/languages";
+import BreathSection from "@/components/BreathSection";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ const Index = () => {
       <HeroSection />
       <UpcomingEventsSection />
       <CommunitySection />
+      <BreathSection />
       <TestimonialsSection />
       <ContactSection />
       <Footer />
